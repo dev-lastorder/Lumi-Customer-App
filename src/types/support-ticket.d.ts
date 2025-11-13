@@ -1,0 +1,1 @@
+export type TicketUserType = "User"|"Owner"

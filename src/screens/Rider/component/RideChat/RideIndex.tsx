@@ -332,7 +332,7 @@ const RideChatIndex: React.FC<Props> = ({
         
         setIsCallingDriver(true);
         try {
-            const hardcodedDriverId = '89501c4c-e522-470a-9dcf-3bf24137ec77';
+            const hardcodedDriverId = 'ce1dd6a2-8662-495e-ae04-e0b84e0e3e30';
             console.log('📞 Calling hardcoded driver:', hardcodedDriverId);
             await twilioService.makeCall(hardcodedDriverId);
             

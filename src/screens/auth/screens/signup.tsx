@@ -62,7 +62,6 @@ export default function SignupPhoneScreen() {
 
     // Format phone number
     const formattedPhone = `${country?.callingCode || '+974'}${phone.replace(/\s/g, '')}`;
-
     // 🔥 TRIGGER MUTATION: All success/error handling is in the hook!
     checkPhoneExists.mutate(formattedPhone);
   };
