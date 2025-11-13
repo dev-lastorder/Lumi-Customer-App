@@ -1,0 +1,1 @@
+export {default as CardFilteredRestaurant} from './cardFilteredRestaurant'

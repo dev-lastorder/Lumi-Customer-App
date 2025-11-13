@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "179577093667",
+    "project_id": "lumi-customer-app",
+    "storage_bucket": "lumi-customer-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179577093667:android:607375b28f2d542c7afb96",
+        "android_client_info": {
+          "package_name": "com.enatega.lumicustomer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNZl7EQirCTCb_Wikz8u-INY1NT0-JwyE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
