@@ -23,7 +23,7 @@ interface CustomerMapProps {
     rideAccepted: boolean;
     myRideDataExist: any;
     rideDataExist: boolean;
-    findingRide:boolean;
+    findingRide?:boolean;
 }
 
 const CustomerMap: React.FC<CustomerMapProps> = ({ stopCoords, rideAccepted, myRideDataExist, rideDataExist, findingRide }) => {
@@ -154,7 +154,7 @@ const CustomerMap: React.FC<CustomerMapProps> = ({ stopCoords, rideAccepted, myR
         <View style={{ flex: 1, paddingTop: Platform.OS === 'android' ? inset.top : 0 }}>
             <MapView
                 ref={mapRef}
-                provider={PROVIDER_GOOGLE}
+                provider={Platform.OS == 'ios' ? undefined : PROVIDER_GOOGLE}
                 style={{
                     height: height * (rideAccepted ? 0.99 : 0.8),
                 }}

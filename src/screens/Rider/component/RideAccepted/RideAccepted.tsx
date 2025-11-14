@@ -157,11 +157,11 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
 
       <View className="flex-row items-center justify-between mb-5">
         <CustomText fontSize="sm" lightColor="#71717A" className="mt-1">
-          {rideData?.vehicle?.model || 'Honda City'}
+          {rideData?.driver?.vehicle?.model || 'Honda City'}
         </CustomText>
 
         <CustomText fontSize="sm" fontWeight="semibold" className="mt-1">
-          {rideData?.vehicle?.plate_number || 'ABC-1234'}
+          {rideData?.driver?.vehicle?.plate_number || 'ABC-1234'}
         </CustomText>
       </View>
 
@@ -169,7 +169,7 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
 
       <TouchableOpacity className="flex-row items-center justify-between mb-4" onPress={() => setShowDriverRating(true)}>
         <View className="flex-row items-center">
-          <Image source={{ uri: rideData?.driver?.user?.profile || rideData?.user?.profile ||  'https://i.pravatar.cc/100?img=3' }} className="w-12 h-12 rounded-full" />
+          <Image source={{ uri: rideData?.driver?.user?.profile || rideData?.user?.profile || 'https://i.pravatar.cc/100?img=3' }} className="w-12 h-12 rounded-full" />
           <View className="ml-3">
             <CustomText className="text-base font-medium">{rideData?.driver?.user?.name}</CustomText>
             <View className="flex-row items-center mt-1">
@@ -254,11 +254,15 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
         <Feather name="chevron-right" size={20} color="#DC2626" />
       </TouchableOpacity>
 
-      <View className="mt-auto">
-        <TouchableOpacity className="border border-[#DC2626] rounded-full py-4 items-center mt-6" onPress={() => handleCancelRide(rideData?.ride_id)}>
-          <Text className="text-[#DC2626] text-base font-semibold">Cancel the ride</Text>
-        </TouchableOpacity>
-      </View>
+      {rideData?.ride_status !== 'ASSIGNED' && (
+        <View className="mt-auto">
+          <TouchableOpacity className="border border-[#DC2626] rounded-full py-4 items-center mt-6" onPress={() => handleCancelRide(rideData?.ride_id)}>
+            <Text className="text-[#DC2626] text-base font-semibold">Cancel the ride</Text>
+          </TouchableOpacity>
+        </View>
+      )
+
+      }
 
       <DriverRating visible={showDriverRating} onClose={() => setShowDriverRating(false)} />
 
@@ -272,7 +276,7 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
         }}
         driverId={rideData?.user?.id || ""}
         driverName={rideData?.driver?.user?.name || "John Doe"}
-        driverAvatar={rideData?.driver?.user?.profile|| "https://i.pravatar.cc/100?img=3"}
+        driverAvatar={rideData?.driver?.user?.profile || "https://i.pravatar.cc/100?img=3"}
       />
 
       <DriverCallModal

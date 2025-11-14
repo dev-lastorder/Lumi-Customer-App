@@ -11,7 +11,7 @@ export interface RidePayload {
     is_hourly: boolean,
 }
 
-export const createRide = async (data: RidePayload) => {
+export const createRide = async (data: any) => {
     const res = await apiInstance.post("/api/v1/rides", data);
     console.log('apiInstance', apiInstance)
     return res.data;

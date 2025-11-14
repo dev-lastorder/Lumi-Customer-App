@@ -26,7 +26,7 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
   const [showFinding, setShowFinding] = useState(true);
   const dispatch = useDispatch();
   const ride = useSelector((state: RootState) => state.rideCreation.ride) as any;
-    const [fareRaised, setFareRaised] = useState(false);
+  const [fareRaised, setFareRaised] = useState(false);
 
   const myRideFare = useSelector((state: RootState) => state.rideCreation.myRideFare);
   const { currency } = useSelector((state: RootState) => state.appConfig);
@@ -37,7 +37,7 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
 
   console.log('fallback in finding driver', ride);
 
- const handleDecrease = () => {
+  const handleDecrease = () => {
     setPrice((prev) => {
       const newPrice = parseFloat((prev - 0.5).toFixed(2));
       if (newPrice <= basePrice) setFareRaised(false);
@@ -67,7 +67,7 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
   };
 
 
-    const handleRaiseFare = async () => {
+  const handleRaiseFare = async () => {
     console.log("handdle ride fare", ride.rideReq)
     setLoading(true);
     try {
@@ -122,7 +122,7 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShowFinding(false);
-    }, 5000);
+    }, 60000);
 
     return () => clearTimeout(timeout);
   }, []);
@@ -170,7 +170,7 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
               <Text className="text-blue-600 font-semibold">+0.5</Text>
             </TouchableOpacity>
           </View>
-<Pressable
+          <Pressable
             disabled={!fareRaised || loading} // disable while loading
             onPress={handleRaiseFare}
             className={`rounded-full py-4 mb-4 border flex-row justify-center items-center ${fareRaised ? 'border-gray-400' : 'border-gray-200 bg-gray-50 opacity-50'
@@ -187,7 +187,7 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
               </Text>
             )}
           </Pressable>
-          <Pressable className="bg-gray-100 rounded-full py-4 mb-2">
+          <Pressable className="bg-gray-100 rounded-full py-4 mb-2" onPress={handleCancelRide}>
             <Text className="text-center text-gray-500 font-semibold">Cancel ride</Text>
           </Pressable>
         </>

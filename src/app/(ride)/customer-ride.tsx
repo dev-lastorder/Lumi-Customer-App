@@ -85,6 +85,7 @@ const CustomerRide = ({ rideDataExist }: any) => {
   const dateObj = scheduleTime ? new Date(scheduleTime) : null;
 
   const myRideFare = useSelector((state: RootState) => state.rideCreation.myRideFare);
+  console.log("my ride fare itss :", myRideFare)
   const [drawerOpen, setDrawerOpen] = useState(false);
   const familyRide = useSelector((state: RootState) => state.rideCreation.familyRide);
   const { } = useAppConfig();
@@ -130,7 +131,6 @@ const CustomerRide = ({ rideDataExist }: any) => {
         offered_fair: parseFloat(Number(myRideFare).toFixed(2)),
         ...(dateObj && rideSchedule && { scheduled_at: dateObj.toISOString() }),
       };
-      console.log('🚀 ~ handleRideAccept ~ data:', data);
 
       if (stopCoords) {
         data.stops.push({
@@ -140,6 +140,9 @@ const CustomerRide = ({ rideDataExist }: any) => {
           order: 1,
         });
       }
+      console.log('🚀 ~ handleRideAccept ~ data:', data);
+      // setLoading(false);
+      // return;
 
       const response = await createRide(data);
       webSocketService.emitRideRequest({
@@ -211,7 +214,7 @@ const CustomerRide = ({ rideDataExist }: any) => {
 
   return (
     <View className="flex-1 bg-white relative">
-      <CustomerMap stopCoords={stopCoords} rideAccepted={rideAccepted} myRideDataExist={myRideDataExist} rideDataExist={rideDataExist} />
+      <CustomerMap findingRide={findingRide} stopCoords={stopCoords} rideAccepted={rideAccepted} myRideDataExist={myRideDataExist} rideDataExist={rideDataExist} />
 
       {error && !rideConfirmation && (
         <View
