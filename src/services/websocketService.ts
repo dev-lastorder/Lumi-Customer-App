@@ -183,6 +183,37 @@ class WebSocketService {
     this.socket.emit('bid-accepted', payload);
   }
 
+
+
+  emitRideRaiseFare(payload: {
+    rideRequestData: any; // full rideReq object from API
+    latitude: any;
+    longitude: any;
+    radiusKm?: number;
+  }): void {
+    if (!this.socket || !this.isConnected) {
+      console.error('❌ Cannot emit ride-request-fare-raised — socket not connected');
+      return;
+    }
+
+    const dataToSend = {
+      rideRequestData: {
+        ...payload.rideRequestData,
+        previousFare: payload.rideRequestData.previousFare?.toFixed?.(2) ?? 0,
+        newFare: payload.rideRequestData.newFare?.toFixed?.(2) ?? 0,
+      },
+      latitude: payload.latitude?.toString() ?? '0',
+      longitude: payload.longitude?.toString() ?? '0',
+      radiusKm: payload.radiusKm ?? 5, // default to 5 km
+    };
+
+    console.log('📤 Emitting ride-request-fare-raised:', dataToSend);
+
+    this.socket.emit('ride-request-fare-raised', dataToSend, (response: any) => {
+      console.log('📥 Server response for ride-request-fare-raised:', response);
+    });
+  }
+
   emitRideRequest(payload: any): void {
 
     if (!this.socket || !this.isConnected) {
