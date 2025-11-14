@@ -106,10 +106,6 @@ const ApolloRoot = () => {
 
   useEffect(() => {
     // Initialize Sentry
-    import('@/utils/methods/sentry').then(({ initSentry }) => {
-      initSentry();
-    });
-
     // Setup Apollo client with current token
     const apolloClient = setupApolloClient({ 
       token: token, 

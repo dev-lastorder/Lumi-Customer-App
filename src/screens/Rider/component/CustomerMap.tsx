@@ -23,9 +23,10 @@ interface CustomerMapProps {
     rideAccepted: boolean;
     myRideDataExist: any;
     rideDataExist: boolean;
+    findingRide?:boolean;
 }
 
-const CustomerMap: React.FC<CustomerMapProps> = ({ stopCoords, rideAccepted, myRideDataExist, rideDataExist }) => {
+const CustomerMap: React.FC<CustomerMapProps> = ({ stopCoords, rideAccepted, myRideDataExist, rideDataExist, findingRide }) => {
     const inset = useSafeAreaInsets();
     const location = useCurrentLocation();
     const [region, setRegion] = useState<Region | null>(null);
@@ -153,7 +154,7 @@ const CustomerMap: React.FC<CustomerMapProps> = ({ stopCoords, rideAccepted, myR
         <View style={{ flex: 1, paddingTop: Platform.OS === 'android' ? inset.top : 0 }}>
             <MapView
                 ref={mapRef}
-                provider={PROVIDER_GOOGLE}
+                provider={Platform.OS == 'ios' ? undefined : PROVIDER_GOOGLE}
                 style={{
                     height: height * (rideAccepted ? 0.99 : 0.8),
                 }}
@@ -175,34 +176,26 @@ const CustomerMap: React.FC<CustomerMapProps> = ({ stopCoords, rideAccepted, myR
                 )}
 
 
-                {findingMyRide && fromCoords && (
+                {findingRide && findingMyRide  && (
                     <Marker
                         coordinate={{
                             latitude: Number(fromCoords.lat),
                             longitude: Number(fromCoords.lng),
                         }}
                         title={fromLocation ?? 'Pickup'}
-                        image={Platform.OS === 'android' ? require('@/assets/images/fromIcon.png') : undefined}
                     >
-                        {/* For iOS, show custom animated view */}
-                        {Platform.OS !== 'android' && (
-                            <View style={{ alignItems: 'center' }}>
-                                <View
-                                    style={{
-                                        position: 'absolute',
-                                        top: -50,
-                                        left: -25,
-                                        width: 80,
-                                        height: 80,
-                                    }}
-                                >
-                                    {/* you can put your GIF or animation here */}
-                                </View>
-                            </View>
-                        )}
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                            <Image
+                                source={require('@/assets/GIFs/Searching.gif')} // your GIF file
+                                style={{
+                                    width: 60,
+                                    height: 60,
+                                    resizeMode: 'contain',
+                                }}
+                            />
+                        </View>
                     </Marker>
                 )}
-
 
 
 

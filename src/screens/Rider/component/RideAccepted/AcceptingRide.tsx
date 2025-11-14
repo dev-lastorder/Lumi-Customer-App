@@ -17,7 +17,18 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
   const [drivers, setDrivers] = useState<any[]>([]);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
   const currentUserId = useSelector((state: RootState) => state.authSuperApp.user?.id);
-  console.log("currentUserId", currentUserId)
+  console.log("currentUserId", currentUserId);
+    const rideSchedule = useSelector((state: RootState) => state.rideCreation.scheduleRide);
+  
+    const hourlyRide = useSelector((state: RootState) => state.rideCreation.hourlyRide);
+    console.log('my driver data:', ride);
+  
+    const status =
+      rideSchedule
+        ? "schedule"
+        : hourlyRide
+          ? "hourlyRide"
+          : "started";
 
 
 
@@ -202,6 +213,9 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
       if (res.message === "Bid accepted successfully") {
 
         setRideAccepted(true);
+
+
+          webSocketService.emitBidAccepted(data?.rideRequest?.id, data?.rider?.userProfile?.user?.id, status);
       }
 
     } catch (error: any) {

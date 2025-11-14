@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Animated, Easing, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Pressable, Animated, Easing, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import AcceptingRide from './RideAccepted/AcceptingRide';
@@ -10,6 +10,8 @@ import { resetLocations } from '@/redux/slices/RideSlices/rideLocationSlice';
 import { clearRide } from '@/redux/slices/RideSlices/rideCreationSlice';
 import { clearLastSelectedRide } from '@/redux/slices/RideSlices/rideSelectionSlice';
 import { router } from 'expo-router';
+import { raiseFare } from '../utils/requestRide';
+import { webSocketService } from '@/services/websocketService';
 
 interface Props {
   fallback: boolean;
@@ -24,19 +26,31 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
   const [showFinding, setShowFinding] = useState(true);
   const dispatch = useDispatch();
   const ride = useSelector((state: RootState) => state.rideCreation.ride) as any;
+  const [fareRaised, setFareRaised] = useState(false);
+
   const myRideFare = useSelector((state: RootState) => state.rideCreation.myRideFare);
   const { currency } = useSelector((state: RootState) => state.appConfig);
+  const [loading, setLoading] = useState(false);
 
   const [price, setPrice] = useState(Number(ride?.offeredFair) || Number(myRideFare) || 56.7);
+  const [basePrice] = useState(price);
 
   console.log('fallback in finding driver', ride);
 
   const handleDecrease = () => {
-    setPrice((prev: number) => parseFloat((prev - 0.5).toFixed(2)));
+    setPrice((prev) => {
+      const newPrice = parseFloat((prev - 0.5).toFixed(2));
+      if (newPrice <= basePrice) setFareRaised(false);
+      return newPrice;
+    });
   };
 
   const handleIncrease = () => {
-    setPrice((prev: number) => parseFloat((prev + 0.5).toFixed(2)));
+    setPrice((prev) => {
+      const newPrice = parseFloat((prev + 0.5).toFixed(2));
+      if (newPrice > basePrice) setFareRaised(true);
+      return newPrice;
+    });
   };
   const fromLocation = useSelector((state: RootState) => state.rideLocation.fromLocation);
   const fromCoords = useSelector((state: RootState) => state.rideLocation.fromCoords);
@@ -50,6 +64,34 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
     dispatch(resetLocations());
     dispatch(clearRide());
     dispatch(clearLastSelectedRide());
+  };
+
+
+  const handleRaiseFare = async () => {
+    console.log("handdle ride fare", ride.rideReq)
+    setLoading(true);
+    try {
+      console.log("handdle ride fare", ride.rideReq.id)
+      const data = await raiseFare(ride.rideReq?.id, price);
+      console.log('my raised fair data is :', data)
+      webSocketService.emitRideRaiseFare({
+        rideRequestData: {
+          ...data.rideReq,
+
+        },
+        latitude: fromCoords?.lat ?? 0,
+        longitude: fromCoords?.lng ?? 0,
+        radiusKm: 500,
+      });
+
+
+      Alert.alert('Success', data.message || 'Fare raised successfully!');
+      setFareRaised(false);
+    } catch (err: any) {
+      Alert.alert('Error', err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Animate the progress bar
@@ -80,7 +122,7 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShowFinding(false);
-    }, 5000);
+    }, 60000);
 
     return () => clearTimeout(timeout);
   }, []);
@@ -128,8 +170,24 @@ const FindingDriver: React.FC<Props> = ({ fallback, setFallback, setRideConfirma
               <Text className="text-blue-600 font-semibold">+0.5</Text>
             </TouchableOpacity>
           </View>
-
-          <Pressable className="bg-gray-100 rounded-full py-4">
+          <Pressable
+            disabled={!fareRaised || loading} // disable while loading
+            onPress={handleRaiseFare}
+            className={`rounded-full py-4 mb-4 border flex-row justify-center items-center ${fareRaised ? 'border-gray-400' : 'border-gray-200 bg-gray-50 opacity-50'
+              }`}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#4B5563" /> // or any color you want
+            ) : (
+              <Text
+                className={`text-center font-semibold ${fareRaised ? 'text-gray-700' : 'text-gray-400'
+                  }`}
+              >
+                Raise Fare
+              </Text>
+            )}
+          </Pressable>
+          <Pressable className="bg-gray-100 rounded-full py-4 mb-2" onPress={handleCancelRide}>
             <Text className="text-center text-gray-500 font-semibold">Cancel ride</Text>
           </Pressable>
         </>

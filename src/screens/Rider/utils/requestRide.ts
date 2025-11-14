@@ -11,10 +11,29 @@ export interface RidePayload {
     is_hourly: boolean,
 }
 
-export const createRide = async (data: RidePayload) => {
+export const createRide = async (data: any) => {
     const res = await apiInstance.post("/api/v1/rides", data);
     console.log('apiInstance', apiInstance)
     return res.data;
 };
 
 
+
+export const raiseFare = async (rideRequestId: string, newFare: number) => {
+  try {
+    const response = await apiInstance.patch(
+      '/api/v1/rides/ride-request/raise-fare',
+      {
+        rideRequestId,
+        newFare,
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error('❌ Raise Fare API Error:', error.response?.data || error.message);
+    throw new Error(
+      error.response?.data?.message || 'Something went wrong while raising fare.'
+    );
+  }
+};

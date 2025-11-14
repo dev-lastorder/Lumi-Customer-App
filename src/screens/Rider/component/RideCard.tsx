@@ -18,7 +18,7 @@ type RideCardProps = {
 };
 
 const RideCard = ({ name, fare, capacity, recommendedFare, imageUrl }: RideCardProps) => {
-  const [newFare, setNewFare] = useState(fare);
+  // const [newFare, setNewFare] = useState(fare);
   const [offerModalVisible, setOfferModalVisible] = useState(false);
   const [paymentVisible, setPaymentVisible] = useState(false);
 
@@ -32,10 +32,15 @@ const RideCard = ({ name, fare, capacity, recommendedFare, imageUrl }: RideCardP
     return name.replace(/_/g, ' ');
   };
 
+   const reduxFare = useSelector((state: RootState) => state.rideCreation.myRideFare);
+
+  // Local fare – based on Redux if available, else fallback to ride fare
+  const [newFare, setNewFare] = useState(Number(reduxFare) || Number(fare));
+
+  // Sync local fare → Redux every time user changes it
   useEffect(() => {
-    console.log('My ride fare is', newFare.toFixed(2));
     dispatch(setMyRideFare(newFare.toFixed(2)));
-  }, [newFare, dispatch]);
+  }, [newFare]);
 
   return (
     <>

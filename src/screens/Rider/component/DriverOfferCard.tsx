@@ -150,9 +150,12 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
           disabled={disabled}
           onPress={() => {
             if (!disabled) {
-              setRideAccepted(true);
+              // setRideAccepted(true);
               onAccept?.();
-              webSocketService.emitBidAccepted(driver?.rideRequest?.id, driver?.rider?.userProfile?.user?.id, status);
+            
+
+              
+
             }
           }}
           style={{
