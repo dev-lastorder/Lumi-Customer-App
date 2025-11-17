@@ -2,7 +2,6 @@ import { Stack, useRouter, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useAppSelector } from '@/redux/hooks';
 import { LoadingPlaceholder } from '@/components';
-import { useInitialAppLoad } from '@/hooks/useInitialAppLoad';
 import { NavigationRedirectController } from './components/NavigationRedirectController';
 import { useEffect, useState } from 'react';
 import SplashVideo from '@/components/splash-screen';
@@ -12,15 +11,11 @@ import SplashGif from '@/components/splash-screen/newIndex';
 const AppNavigation = () => {
   const theme = useAppSelector((state) => state.theme.currentTheme);
   const [splashDone, setSplashDone] = useState(false);
-  const { isInitializing } = useInitialAppLoad();
 
   if (!splashDone) {
     return <SplashGif onFinish={() => setSplashDone(true)} />;
   }
 
-  if (isInitializing) {
-    return <LoadingPlaceholder placeholder="Initializing App..." />;
-  }
 
   return (
     <>

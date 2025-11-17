@@ -1,7 +1,0 @@
-export * from './search-bar'
-export * from './cuisines'
-export * from './search-history'
-export * from './search-results'
-export * from './card-filteredrestaurants'
-export * from './card-filteredFood'
-export * from './FilterBar'

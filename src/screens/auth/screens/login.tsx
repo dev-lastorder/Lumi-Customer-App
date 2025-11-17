@@ -40,7 +40,7 @@ export default function LoginScreen() {
       return;
     }
 
-    if (phone.trim().length < 8) {
+    if (phone.trim().length < 7) {
       showInfoToast('Invalid Phone', 'Please enter a valid phone number');
       return;
     }

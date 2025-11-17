@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'expo-router';
 import { useAppSelector } from '@/redux/hooks';
-import { useInitialAppLoad } from '@/hooks/useInitialAppLoad';
 import { ZoneTypes } from '@/utils';
 
 const ZONE_SELECTION_PATH = '/zone-selection';
@@ -12,10 +11,9 @@ export const NavigationRedirectController = () => {
   const pathname = usePathname();
   const type = useAppSelector((state) => state.locationPicker.type);
   const latitude = useAppSelector((state) => state.locationPicker.latitude);
-  const { isInitializing } = useInitialAppLoad();
 
   useEffect(() => {
-    if (isInitializing) return;
+ 
 
     if (shouldRedirectToZone(type)) {
       if (pathname !== ZONE_SELECTION_PATH) {
@@ -28,9 +26,9 @@ export const NavigationRedirectController = () => {
       pathname === ZONE_SELECTION_PATH;
 
     if (isOnWrongPath) {
-      router.replace(DISCOVERY_PATH);
+    console.log("Wrong path")
     }
-  }, [type, pathname, router, isInitializing]);
+  }, [type, pathname, router]);
 
   return null;
 };

@@ -13,7 +13,6 @@ import * as Location from 'expo-location';
 import { useQuery } from '@apollo/client';
 import { useRouter } from 'expo-router';
 
-import { GET_ALL_ADDRESSES, GET_ZONES } from '@/api';
 import { useLocationPicker } from '@/hooks/useLocationPicker';
 import { CustomIcon, CustomText } from '@/components';
 import CustomBottomSheetModal from './BottomModalSheet/CustomBottomSheetModal';
@@ -114,13 +113,11 @@ const LocationPickerModal: React.FC<Props> = ({ visible, onClose, onOpen, redire
   const [zoneModalVisible, setZoneModalVisible] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
-  const { data: addressesData } = useQuery(GET_ALL_ADDRESSES);
-  const { data: zonesData, loading: zonesLoading } = useQuery(GET_ZONES);
   const { updateCurrentLocation, updateAddress, updateZone, location } = useLocationPicker();
 
   useEffect(() => {
     const initializeLocation = async () => {
-      if (addressesData?.profile?.addresses?.length && !location.type) {
+      if (!location.type) {
         try {
           const position = await requestAndFetchLocation();
           const place = await reverseGeocode(position.coords.latitude, position.coords.longitude);
@@ -137,7 +134,7 @@ const LocationPickerModal: React.FC<Props> = ({ visible, onClose, onOpen, redire
     };
 
     initializeLocation();
-  }, [addressesData, location]);
+  }, [location]);
 
   const handleCurrentLocation = async () => {
     setIsLoadingLocation(true);
@@ -215,16 +212,16 @@ const LocationPickerModal: React.FC<Props> = ({ visible, onClose, onOpen, redire
               )}
             </TouchableOpacity>
 
-            {addressesData?.profile?.addresses?.map((addr: Address) => (
+            {/* {addressesData?.profile?.addresses?.map((addr: Address) => (
               <AddressItem
                 key={addr._id}
                 addr={addr}
                 isSelected={location.type === 'address' && location.addressId === addr._id}
                 onSelect={handleAddressSelect}
               />
-            ))}
+            ))} */}
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               className="flex-row items-center py-4 border-t border-gray-100"
               onPress={() => {
                 onClose();
@@ -235,7 +232,7 @@ const LocationPickerModal: React.FC<Props> = ({ visible, onClose, onOpen, redire
               <CustomText variant="body" className="pl-3">
                 Add new address
               </CustomText>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               className="flex-row items-center py-4 border-t border-gray-100"
@@ -252,7 +249,7 @@ const LocationPickerModal: React.FC<Props> = ({ visible, onClose, onOpen, redire
           </ScrollView>
         </View>
       </CustomBottomSheetModal>
-
+{/* 
       <ChooseZoneModal
         visible={zoneModalVisible}
         zones={zonesData?.zonesCentral || []}
@@ -278,7 +275,7 @@ const LocationPickerModal: React.FC<Props> = ({ visible, onClose, onOpen, redire
           setZoneModalVisible(false);
           onOpen();
         }}
-      />
+      /> */}
     </>
   );
 };

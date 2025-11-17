@@ -24,7 +24,7 @@ import Toast from 'react-native-toast-message';
 
 import { persistor, store } from '@/redux';
 import { setupApolloClient, useFontLoader } from '@/hooks';
-import { LoadingPlaceholder, ThemeSync } from '@/components';
+import { LoadingPlaceholder } from '@/components';
 import ErrorBoundary from '@/components/error-boundary';
 import SplashVideo from '@/components/splash-screen';
 import { selectSuperAppIsAuthenticated, selectSuperAppToken, selectSuperAppUser } from '@/redux';
@@ -33,6 +33,7 @@ import GradientBackground from '@/components/common/GradientBackground/GradientB
 import SplashGif from '@/components/splash-screen/newIndex';
 import twilioService from '../../services/twilio.service';
 import { Alert } from 'react-native';
+import { ThemeSync } from '@/components/common/ThemeSync';
 
 // 🔥 NEW: Create QueryClient instance
 const queryClient = new QueryClient({
@@ -106,9 +107,7 @@ const ApolloRoot = () => {
 
   useEffect(() => {
     // Initialize Sentry
-    import('@/utils/methods/sentry').then(({ initSentry }) => {
-      initSentry();
-    });
+  
 
     // Setup Apollo client with current token
     const apolloClient = setupApolloClient({ 
