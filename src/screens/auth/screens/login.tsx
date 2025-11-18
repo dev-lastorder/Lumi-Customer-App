@@ -15,6 +15,7 @@ import { SocialLoginButtons } from '../components/socialLoginButtons';
 // 🔥 NEW: TanStack Query Hook + Toast
 import { useAuth } from '@/hooks/auth/useAuth';
 import { showInfoToast } from '@/utils/toast';
+import { validatePhoneNumber } from '@/utils/helpers/validations';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -35,15 +36,19 @@ export default function LoginScreen() {
   // 🔥 SIMPLIFIED: Main action handler (was 40+ lines, now 10 lines!)
   const handleContinue = () => {
     // Basic validation with toast
-    if (!phone.trim()) {
-      showInfoToast('Phone Required', 'Please enter your phone number');
-      return;
-    }
+    // if (!phone.trim()) {
+    //   showInfoToast('Phone Required', 'Please enter your phone number');
+    //   return;
+    // }
 
-    if (phone.trim().length < 8) {
-      showInfoToast('Invalid Phone', 'Please enter a valid phone number');
-      return;
-    }
+    // if (phone.trim().length < 7) {
+    //   showInfoToast('Invalid Phone', 'Please enter a valid phone number');
+    //   return;
+    // }
+
+    const isPhoneValid = validatePhoneNumber(phone);
+
+    if (!isPhoneValid) return;
 
     // Format phone number
     const formattedPhone = `${country?.callingCode || '+974'}${phone.replace(/\s/g, '')}`;

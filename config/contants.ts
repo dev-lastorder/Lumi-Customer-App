@@ -1,5 +1,7 @@
+import { BASE_URL } from "@/environment";
+
 export const API_CONFIG = {
-    BASE_URL: 'https://api-nestjs-enatega.up.railway.app',
+    BASE_URL: BASE_URL, 
     ENDPOINTS: {
       GET_TOKEN: '/test/twilio/token',
       VOICE_WEBHOOK: '/test/twilio/voice'

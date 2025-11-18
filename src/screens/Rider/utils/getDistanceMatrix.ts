@@ -1,10 +1,12 @@
+import { BASE_URL } from "@/environment";
 
 export const getDistanceMatrix = async (
   origins: string[],
   destinations: string[]
 ) => {
   try {
-    const url = `https://api-nestjs-enatega.up.railway.app/api/v1/maps/distance-matrix`;
+
+    const url = `${BASE_URL}/api/v1/maps/distance-matrix`;
 
     const body = {
       origins,
@@ -44,8 +46,11 @@ export const sendFareData = async (
 ) => {
   try {
     // Step 1: POST to backend distance-matrix endpoint
+    
+    const url = `${BASE_URL}/api/v1/maps/distance-matrix`;
+    
     const response = await fetch(
-      `https://api-nestjs-enatega.up.railway.app/api/v1/maps/distance-matrix`,
+      url,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,8 +78,8 @@ export const sendFareData = async (
     console.log("📏 Distance (km):", distanceKm, "| ⏱ Duration (min):", finalDurationMin);
 
     // Step 3: Fetch fare calculation from backend
-    const apiUrl = `https://api-nestjs-enatega.up.railway.app/api/v1/rides/fare/all?durationMin=${finalDurationMin}&distanceKm=${distanceKm}&isHourly=${isHourly}`;
-
+  
+    const apiUrl = `${BASE_URL}/api/v1/rides/fare/all?durationMin=${finalDurationMin}&distanceKm=${distanceKm}&isHourly=${isHourly}`;
     const fareResponse = await fetch(apiUrl, { method: "GET" });
     const fareData = await fareResponse.json();
 

@@ -1,4 +1,5 @@
 // services/websocketService.ts
+import { BASE_URL } from '@/environment';
 import io, { Socket } from 'socket.io-client';
 
 // Types matching your backend
@@ -16,7 +17,7 @@ interface IReceivedMessage {
 
 // WebSocket configuration
 const IS_DEV = __DEV__;
-const WEBSOCKET_URL = IS_DEV ? 'https://api-nestjs-enatega.up.railway.app' : 'https://api-nestjs-enatega.up.railway.app';
+const WEBSOCKET_URL = IS_DEV ? BASE_URL : BASE_URL;
 
 class WebSocketService {
   private socket: Socket | null = null;
