@@ -32,15 +32,13 @@ const CustomerMap: React.FC<CustomerMapProps> = ({ stopCoords, rideAccepted, myR
     const [route, setRoute] = useState<any[]>([]);
     const [newVehicles, setNewVehicles] = useState<any[]>([]);
     const findingMyRide = useSelector((state: RootState) => state.rideCreation.findingRide);
-
-    console.log("ride acce[te", myRideDataExist)
-    console.log("ride data haio? ", rideDataExist)
+    const activeRide = useSelector((state: RootState) => state.activeRide.onGoingActiveRideData);
     const mapRef = useRef<MapView | null>(null);
 
-    const fromLocation = useSelector((state: RootState) => state.rideLocation.fromLocation) || myRideDataExist?.pickup_location;
-    const fromCoords = useSelector((state: RootState) => state.rideLocation.fromCoords) || myRideDataExist?.pickup;
-    const toLocation = useSelector((state: RootState) => state.rideLocation.toLocation) || myRideDataExist?.dropoff_location;
-    const toCoords = useSelector((state: RootState) => state.rideLocation.toCoords) || myRideDataExist?.dropoff;
+    const fromLocation = useSelector((state: RootState) => state.rideLocation.fromLocation) || myRideDataExist?.pickup_location ||activeRide?.pickup_location ;
+    const fromCoords = useSelector((state: RootState) => state.rideLocation.fromCoords) || myRideDataExist?.pickup || activeRide?.pickup;
+    const toLocation = useSelector((state: RootState) => state.rideLocation.toLocation) || myRideDataExist?.dropoff_location || activeRide?.dropoff_location;
+    const toCoords = useSelector((state: RootState) => state.rideLocation.toCoords) || myRideDataExist?.dropoff || activeRide?.dropoff;
 
     // Update region whenever from/to changes
     useEffect(() => {
