@@ -23,7 +23,7 @@ import RecentSearches from './RecentSearches';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@apollo/client';
-import { GET_CONFIGURATION } from '@/api';
+
 import { fetchPlaces, getPlaceDetails } from '../utils/fetchPlace';
 import { saveRecentSearch } from '../utils/saveUserSearch';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -42,6 +42,8 @@ interface PlacePrediction {
 }
 
 const { height, width } = Dimensions.get('window');
+const key = process.env;
+console.log("My api key", key)
 
 const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
   visible,
@@ -49,8 +51,6 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
   setStopLocation,
   setStopCoords,
 }) => {
-  const { data } = useQuery(GET_CONFIGURATION);
-  const apiKey = data?.configuration?.googleApiKey;
   const [showMap, setShowMap] = useState(false);
   const [predictions, setPredictions] = useState<PlacePrediction[]>([]);
   const [mapPredictions, setMapPredictions] = useState<PlacePrediction[]>([]);
@@ -118,12 +118,12 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
 
   // Fetch address from coordinates (reverse geocoding)
   const fetchAddressFromCoordinates = async (lat: number, lng: number) => {
-    if (!apiKey) return;
+    
     
     setIsLoadingAddress(true);
     try {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}`
       );
       const data = await response.json();
       
@@ -145,7 +145,7 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
   const onRegionChangeComplete = useCallback((newRegion: any) => {
     setRegion(newRegion);
     debounceRegionChange(() => fetchAddressFromCoordinates(newRegion.latitude, newRegion.longitude), 500)();
-  }, [apiKey, debounceRegionChange]);
+  }, [key, debounceRegionChange]);
 
   // Handle search input change
   const handleChange = async (text: string) => {
@@ -154,7 +154,7 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
     
     if (text.length >= 3) {
       debounce(async () => {
-        const results = await fetchPlaces(text, apiKey);
+        const results = await fetchPlaces(text, key);
         setPredictions(results || []);
       }, 300)();
     } else {
@@ -164,7 +164,7 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
 
   // Handle selecting prediction from search
   const handleSelectPrediction = async (prediction: PlacePrediction) => {
-    const coords = await getPlaceDetails(prediction?.place_id, apiKey);
+    const coords = await getPlaceDetails(prediction?.place_id, key);
     console.log("Stop coords are:", coords);
 
     if (coords) {
@@ -242,7 +242,7 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
     if (text.length >= 3) {
       debounceMapSearch(async () => {
         try {
-          const results = await fetchPlaces(text, apiKey);
+          const results = await fetchPlaces(text, key);
           setMapPredictions(results || []);
         } catch (error) {
           console.error('Error searching address:', error);
@@ -260,7 +260,7 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
     setMapPredictions([]);
     
     try {
-      const coords = await getPlaceDetails(prediction.place_id, apiKey);
+      const coords = await getPlaceDetails(prediction.place_id, key);
       if (coords && mapRef.current) {
         const [lng, lat] = coords;
         const newRegion = {

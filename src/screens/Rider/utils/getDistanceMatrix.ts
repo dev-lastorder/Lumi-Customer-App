@@ -40,7 +40,6 @@ export const getDistanceMatrix = async (
 export const sendFareData = async (
   origins: string[],
   destinations: string[],
-  apiKey: string,
   isHourly: boolean,
   durationMin?: number
 ) => {

@@ -1,7 +1,0 @@
-export { default as PastOrderDetailHeader } from "./past-order-detail.header"
-export { default as PastOrderDetailDelivery } from "./past-order-detail.delivery"
-export { default as PastOrderDetailActions } from "./past-order-detail.actions"
-export { default as PastOrderDetailOrderItems } from "./past-order-detail.order-items"
-export { default as PastOrderDetailOrderTotal } from "./past-order-detail.order-total"
-export { default as PastOrderDetailOrderStatus } from "./past-order-detail.order-status"
-export { default as PastOrderDetailOrderSummary } from "./past-order-detail.order-summary"

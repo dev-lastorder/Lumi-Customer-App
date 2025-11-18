@@ -7,7 +7,6 @@ import OfferYourFare from './OfferYourFare'
 import RideCard from './RideCard'
 import { getDistanceMatrix, sendFareData } from '../utils/getDistanceMatrix'
 import { useQuery } from '@apollo/client'
-import { GET_CONFIGURATION } from '@/api'
 import { RootState } from '@/redux'
 import { useSelector, useDispatch } from 'react-redux'
 import { setLastSelectedRide } from '@/redux/slices/RideSlices/rideSelectionSlice'
@@ -28,8 +27,6 @@ const RideFare = () => {
     const [offerModalVisible, setOfferModalVisible] = useState(false);
     const [loadingRides, setLoadingRides] = useState(true);
 
-    const { data } = useQuery(GET_CONFIGURATION);
-    const apiKey = data?.configuration?.googleApiKey;
     const fromLocation = useSelector(
         (state: RootState) => state.rideLocation.fromLocation
     );
@@ -65,10 +62,10 @@ const RideFare = () => {
 
 
     useEffect(() => {
-        if (apiKey && fromLocation && toLocation) {
+        if ( fromLocation && toLocation) {
             setLoadingRides(true)
             const durationMin = getHours * 60;
-            sendFareData([fromLocation], [toLocation], apiKey, hourlyRide, durationMin)
+            sendFareData([fromLocation], [toLocation],hourlyRide, durationMin)
                 .then((res) => {
                     console.log("🚖 Ride fares response:", res);
                     setLoadingRides(false)
@@ -86,7 +83,7 @@ const RideFare = () => {
                 })
                 .catch(console.error);
         }
-    }, [apiKey, fromLocation, toLocation]);
+    }, [ fromLocation, toLocation]);
 
 
 

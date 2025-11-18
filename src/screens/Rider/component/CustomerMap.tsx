@@ -8,7 +8,6 @@ import { RootState } from '@/redux';
 import { generateNearbyVehicles, snapToRoad } from '../utils/generateVehicleNearby';
 import { getNearbyDrivers } from '../utils/getNearByVehicles';
 import { fetchGoogleRoute } from '../utils/directionService';
-import { GET_CONFIGURATION } from '@/api';
 import { useQuery } from '@apollo/client';
 
 const { width, height } = Dimensions.get('window');
@@ -32,8 +31,6 @@ const CustomerMap: React.FC<CustomerMapProps> = ({ stopCoords, rideAccepted, myR
     const [region, setRegion] = useState<Region | null>(null);
     const [route, setRoute] = useState<any[]>([]);
     const [newVehicles, setNewVehicles] = useState<any[]>([]);
-    const { data } = useQuery(GET_CONFIGURATION);
-    const apiKey = data?.configuration?.googleApiKey;
     const findingMyRide = useSelector((state: RootState) => state.rideCreation.findingRide);
 
     console.log("ride acce[te", myRideDataExist)
