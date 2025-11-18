@@ -4,7 +4,7 @@ import { CarouselRenderItemInfo } from 'react-native-reanimated-carousel/lib/typ
 import { useRouter } from 'expo-router';
 
 // API
-import { GET_BANNERS } from '@/api';
+// import { GET_BANNERS } from '@/api';
 
 // Components
 import { CustomCarousel, CustomText } from '@/components';
@@ -14,23 +14,22 @@ import { VideoItem } from './video-item';
 import { IBannner } from './interface';
 
 // Utils
-import { onGetBannerNavigation } from '@/utils/methods';
 import { shadowStyle } from '@/utils';
 import adjust, { SCREEN_WIDTH } from '@/utils/helpers/adjust';
 
-const useBannerData = () => {
-  const { data } = useQuery(GET_BANNERS);
-  return data?.banners || [];
-};
+// const useBannerData = () => {
+//   const { data } = useQuery(GET_BANNERS);
+//   return data?.banners || [];
+// };
 
-const useBannerNavigation = () => {
-  const router = useRouter();
-  const navigate = (banner: IBannner) => {
-    const route = onGetBannerNavigation(banner);
-    router.push(route);
-  };
-  return navigate;
-};
+// const useBannerNavigation = () => {
+//   const router = useRouter();
+//   const navigate = (banner: IBannner) => {
+//     const route = onGetBannerNavigation(banner);
+//     router.push(route);
+//   };
+//   return navigate;
+// };
 
 const BannerMedia = ({ item }: { item: IBannner }) => {
   const isVideo = item?.file?.includes('mp4');
@@ -87,17 +86,17 @@ const BannerCard = ({ item, onPress }: { item: IBannner; onPress: (item: IBannne
 );
 
 const HomeScreenBanner = () => {
-  const banners = useBannerData();
-  const handleBannerPress = useBannerNavigation();
+  // const banners = useBannerData();
+  // const handleBannerPress = useBannerNavigation();
 
-  const renderItem = ({ item }: CarouselRenderItemInfo<IBannner>) => (
-    // <View style={{width:"100%", height:200, borderWidth:2}}></View>
-    <BannerCard item={item} onPress={handleBannerPress} />
-  );
+  // const renderItem = ({ item }: CarouselRenderItemInfo<IBannner>) => (
+  //   // <View style={{width:"100%", height:200, borderWidth:2}}></View>
+  //   <BannerCard item={item} onPress={handleBannerPress} />
+  // );
 
   return (
     <View style={{ paddingHorizontal: adjust(16) }}>
-      <CustomCarousel
+      {/* <CustomCarousel
         data={banners}
         showPager
         autoPlay
@@ -105,7 +104,7 @@ const HomeScreenBanner = () => {
         renderItem={renderItem}
         carouselStyle={{}}
         containerStyle={{}}
-      />
+      /> */}
     </View>
   );
 };
