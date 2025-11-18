@@ -1,5 +1,6 @@
 // services/websocketService.ts
 import { BASE_URL } from '@/environment';
+import { router } from 'expo-router';
 import io, { Socket } from 'socket.io-client';
 
 // Types matching your backend
@@ -72,9 +73,14 @@ class WebSocketService {
           this.connectionListeners.forEach((listener) => listener(false));
         });
 
-        
+
         this.socket.on("ride-completed", (data) => {
           console.log("Your ride has been completed successfully", data);
+          router.push("/(ride)/customer-ride")
+
+        });
+         this.socket.on("ride-started", (data) => {
+          console.log("Your ride has been started successfully", data);
 
         });
 
@@ -173,17 +179,31 @@ class WebSocketService {
   }
 
   // Emit a bid accepted event
-  emitBidAccepted(rideRequestId: string, riderUserId: string,startType:any): void {
+  emitBidAccepted(rideRequestId: string, riderUserId: string, startType: any): void {
     if (!this.socket || !this.isConnected) {
       console.error('❌ Cannot emit bid-accepted — socket not connected');
       return;
     }
 
-    const payload = { rideRequestId, riderUserId ,startType };
+    const payload = { rideRequestId, riderUserId, startType };
     console.log('📤 Emitting bid-accepted:', payload);
     this.socket.emit('bid-accepted', payload);
   }
+  rideCancel(payload: {
+    rideId: string;
+    genericUserId: string
 
+  }): void {
+
+    if (!this.socket || !this.isConnected) {
+      console.error("❌ Cannot start ride— WebSocket not connected");
+      return;
+    }
+
+    console.log("📤 Emitting ride-cancelled  event:", payload);
+    this.socket.emit("ride-cancelled", payload);
+
+  }
 
 
   emitRideRaiseFare(payload: {

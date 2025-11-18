@@ -65,7 +65,8 @@ const RideChatIndex: React.FC<Props> = ({
     driverAvatar = "https://i.pravatar.cc/100?img=3"
 }) => {
     
-    const currentUserId = useSelector((state: RootState) => state.authSuperApp.user?.id);
+    // const currentUserId = useSelector((state: RootState) => state.authSuperApp.user?.id);
+    const currentUserId = "89501c4c-e522-470a-9dcf-3bf24137ec77";
     console.log("currrent id is :", currentUserId)
     
     // Create unique cache key for this conversation
@@ -331,7 +332,7 @@ const RideChatIndex: React.FC<Props> = ({
         
         setIsCallingDriver(true);
         try {
-            const hardcodedDriverId = 'ce1dd6a2-8662-495e-ae04-e0b84e0e3e30';
+            const hardcodedDriverId = '89501c4c-e522-470a-9dcf-3bf24137ec77';
             console.log('📞 Calling hardcoded driver:', hardcodedDriverId);
             await twilioService.makeCall(hardcodedDriverId);
             

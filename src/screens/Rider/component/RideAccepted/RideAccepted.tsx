@@ -17,6 +17,7 @@ import DriverRating from '../DriverRating/DriverRating';
 import { getEmergencyContact } from '../../utils/getEmergencyContact';
 import { rideRequestsService } from '../../utils/rideRequestService';
 import DriverCallModal from './DriverCallModal';
+import { webSocketService } from '@/services/websocketService';
 
 interface Props {
   setRideAccepted: React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,9 +53,16 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
     dispatch(resetHourlyRide());
   };
 
-  const handleCancelRide = async (rideId: string) => {
+  const handleCancelRide = async (rideId: string, rideData: any) => {
+
+    console.log("rideData in ride accepted cancel", rideData);
+    webSocketService.rideCancel({
+      rideId: rideId,
+      genericUserId: rideData?.driver?.user?.id,
+    })
     const result = await rideRequestsService.cancelRide(rideId);
 
+ 
     if (result?.success === false) {
       Alert.alert("Error", result.error.message || "Could not cancel ride.");
     } else {
@@ -131,6 +139,7 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
   }, []);
 
 
+  console.log("hellofghfeuogheiufheri", rideData);
 
   return (
     <View className="flex-1 p-4 relative">
@@ -169,7 +178,7 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
 
       <TouchableOpacity className="flex-row items-center justify-between mb-4" onPress={() => setShowDriverRating(true)}>
         <View className="flex-row items-center">
-          <Image source={{ uri: rideData?.driver?.user?.profile || rideData?.user?.profile ||  'https://i.pravatar.cc/100?img=3' }} className="w-12 h-12 rounded-full" />
+          <Image source={{ uri: rideData?.driver?.user?.profile || rideData?.user?.profile || 'https://i.pravatar.cc/100?img=3' }} className="w-12 h-12 rounded-full" />
           <View className="ml-3">
             <CustomText className="text-base font-medium">{rideData?.driver?.user?.name}</CustomText>
             <View className="flex-row items-center mt-1">
@@ -255,7 +264,7 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
       </TouchableOpacity>
 
       <View className="mt-auto">
-        <TouchableOpacity className="border border-[#DC2626] rounded-full py-4 items-center mt-6" onPress={() => handleCancelRide(rideData?.ride_id)}>
+        <TouchableOpacity className="border border-[#DC2626] rounded-full py-4 items-center mt-6" onPress={() => handleCancelRide(rideData?.ride_id, rideData)}>
           <Text className="text-[#DC2626] text-base font-semibold">Cancel the ride</Text>
         </TouchableOpacity>
       </View>
@@ -263,6 +272,9 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
       <DriverRating visible={showDriverRating} onClose={() => setShowDriverRating(false)} />
 
       <RideSafetyIndex visible={safetyVisible} onClose={() => setSafetyVisible(false)} rideData={rideData} />
+
+
+
       <RideChatIndex
         visible={chatVisible}
         onClose={() => setChatVisible(false)}
@@ -270,9 +282,9 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
           setChatVisible(false);
           setCallVisible(true);
         }}
-        driverId={rideData?.user?.id || ""}
+        driverId={rideData?.driver?.user?.id || ""}
         driverName={rideData?.driver?.user?.name || "John Doe"}
-        driverAvatar={rideData?.driver?.user?.profile|| "https://i.pravatar.cc/100?img=3"}
+        driverAvatar={rideData?.driver?.user?.profile || "https://i.pravatar.cc/100?img=3"}
       />
 
       <DriverCallModal
@@ -287,7 +299,7 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
       />
 
       <PaymentBottomModal visible={cancelRide} onClose={() => setCancelRide(false)} title="Are you sure?">
-        <TouchableOpacity className="bg-red-500 flex rounded-full py-3 mb-2" onPress={() => handleCancelRide(rideData?.ride_id)}>
+        <TouchableOpacity className="bg-red-500 flex rounded-full py-3 mb-2" onPress={() => handleCancelRide(rideData?.ride_id, rideData)}>
           <CustomText lightColor="white" className="text-center">
             Yes, cancel the ride
           </CustomText>

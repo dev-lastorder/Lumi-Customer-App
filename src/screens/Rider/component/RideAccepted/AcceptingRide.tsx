@@ -6,6 +6,7 @@ import { getBids } from '@/screens/Rider/utils/getBids';
 import { RootState, useAppSelector } from '@/redux';
 import { useSelector } from 'react-redux';
 import { acceptBid } from '../../utils/acceptBid';
+import { router } from 'expo-router';
 
 interface Props {
   setRideAccepted: React.Dispatch<React.SetStateAction<boolean>>;
@@ -200,8 +201,16 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
       const res = await acceptBid(data?.id, payload);
       console.log("✅ Bid accepted successfully:", res);
       if (res.message === "Bid accepted successfully") {
+        if (res.is_scheduled) {
+          // 🚗 Scheduled ride accepted → show modal
+        
+            router.push("/(ride)/customer-ride");
+        } else {
 
-        setRideAccepted(true);
+            setRideAccepted(true);
+          
+        
+        }
       }
 
     } catch (error: any) {

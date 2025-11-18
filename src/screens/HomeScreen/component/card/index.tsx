@@ -12,9 +12,9 @@ const LARGE_HEIGHT = 350;
 const DATA = [
   { id: "1", title: "LUMI Drive", type: "image", source: require("@/assets/GIFs/lumiDrive.gif"), icon: require("@/assets/images/lumiDriveLogo.png"), size: "small" },
   { id: "3", title: "LUMI Food", type: "image", source: require("@/assets/GIFs/lumiFood.gif"), icon: require("@/assets/images/lumiFoodLogo.png"), size: "large" },
-  { id: "4", title: "LUMI Hotel", type: "image", source: require("@/assets/GIFs/LumiHotel.gif"), icon: require("@/assets/images/lumiHotelLogo.png"), size: "small" },
+  { id: "4", title: "LUMI Hotel", type: "image", source: require("@/assets/GIFs/lumiHotel.gif"), icon: require("@/assets/images/lumiHotelLogo.png"), size: "small" },
   { id: "2", title: "LUMI Ticket", type: "image", source: require("@/assets/GIFs/lumiFlight.gif"), icon: require("@/assets/images/lumiTicketLogo.png"), size: "small" },
-  { id: "5", title: "LUMI Hotel", type: "image", source: require("@/assets/GIFs/LumiHotel.gif"), icon: require("@/assets/images/lumiHotelLogo.png"), size: "large" },
+  { id: "5", title: "LUMI Hotel", type: "image", source: require("@/assets/GIFs/lumiHotel.gif"), icon: require("@/assets/images/lumiHotelLogo.png"), size: "large" },
   { id: "6", title: "LUMI Hospitality", type: "image", source: require("@/assets/GIFs/lumiHospitality.gif"), icon: require("@/assets/images/lumiHospitalityLogo.png"), size: "small" },
 ];
 
