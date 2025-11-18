@@ -2,8 +2,9 @@ import { Voice, Call, CallInvite } from '@twilio/voice-react-native-sdk';
 import { Alert, Platform, PermissionsAndroid } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { BASE_URL } from '@/environment';
 
-const BACKEND_URL = 'https://api-nestjs-enatega.up.railway.app';
+const BACKEND_URL = BASE_URL; 
 // const BACKEND_URL = 'http://192.168.18.32:3000'
 const TOKEN_STORAGE_KEY = '@twilio_voice_token';
 const TOKEN_EXPIRY_KEY = '@twilio_voice_token_expiry';

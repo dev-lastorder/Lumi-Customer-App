@@ -1,9 +1,10 @@
 // src/services/api/apiInstance.ts
+import { BASE_URL } from '@/environment';
 import axios from 'axios';
 
 // const LOCAL_API_BASE_URL = 'http://192.168.18.32:3000/';
 
-const LOCAL_API_BASE_URL = "https://api-nestjs-enatega.up.railway.app/"
+const LOCAL_API_BASE_URL = BASE_URL; 
 
 export const apiInstance = axios.create({
   baseURL: LOCAL_API_BASE_URL,
