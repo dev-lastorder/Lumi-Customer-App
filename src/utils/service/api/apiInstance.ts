@@ -1,14 +1,16 @@
-import axios from "axios";
+import { BASE_URL } from '@/environment';
+import axios from 'axios';
 
-const API_BASE_URL = "https://api-nestjs-enatega.up.railway.app/api-docs";
+const API_BASE_URL = BASE_URL + '/api-docs'; 
 
-let token: string | null = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY3ZGI4OGUxLTg3OGEtNDhhNS04ZDlhLTUxY2U2NmVhMGIzMSIsImlhdCI6MTc1NzU5MDA0OSwiZXhwIjoxNzYwMTgyMDQ5fQ.JCfuhOT2DRgmpQiLmWKYdfUMOf5zzKZI_bCBELDdhzY";
+let token: string | null =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY3ZGI4OGUxLTg3OGEtNDhhNS04ZDlhLTUxY2U2NmVhMGIzMSIsImlhdCI6MTc1NzU5MDA0OSwiZXhwIjoxNzYwMTgyMDQ5fQ.JCfuhOT2DRgmpQiLmWKYdfUMOf5zzKZI_bCBELDdhzY';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 

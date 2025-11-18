@@ -1,3 +1,4 @@
+import { BASE_URL } from "@/environment";
 
 export const fetchGoogleRoute = async (
   origin: { lat: number; lng: number },
@@ -6,7 +7,8 @@ export const fetchGoogleRoute = async (
 ) => {
   try {
     // Base endpoint
-    const baseUrl = "https://api-nestjs-enatega.up.railway.app/api/v1/maps/route";
+   
+    const baseUrl = BASE_URL + "/api/v1/maps/route";
 
     // Construct the URL with origin, destination, and optional waypoints
     const params = new URLSearchParams({
