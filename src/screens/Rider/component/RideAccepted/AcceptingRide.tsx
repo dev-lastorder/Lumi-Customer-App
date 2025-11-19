@@ -7,6 +7,7 @@ import { RootState, useAppSelector } from '@/redux';
 import { useSelector } from 'react-redux';
 import { acceptBid } from '../../utils/acceptBid';
 import { router } from 'expo-router';
+import { rideRequestsService } from '../../utils/rideRequestService';
 
 interface Props {
   setRideAccepted: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,12 +18,20 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
   const ride = useAppSelector((state) => state.rideCreation.ride);
   const [drivers, setDrivers] = useState<any[]>([]);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
+   const [activeRequests, setActiveRequests] = useState([]);
   const currentUserId = useSelector((state: RootState) => state.authSuperApp.user?.id);
   console.log("currentUserId", currentUserId)
 
 
 
   console.log("My ride in accepting ride", ride)
+
+
+ 
+
+  const handleDecline = (id: string) => {
+    setActiveRequests(prev => prev.filter(item => item?.id !== id));
+  };
 
   // API fallback
   const getBidsHandler = async (): Promise<any[]> => {
@@ -203,13 +212,21 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
       if (res.message === "Bid accepted successfully") {
         if (res.is_scheduled) {
           // 🚗 Scheduled ride accepted → show modal
-        
-            router.push("/(ride)/customer-ride");
+
+           const activeRide = await rideRequestsService.getActiveRide();
+                console.log("🚗 Current active ride:", activeRide);
+                {if (activeRide){
+                   router.push("/(ride)/customer-ride");
+                }
+
+                }
+
+          router.push("/(ride)/customer-ride");
         } else {
 
-            setRideAccepted(true);
-          
-        
+          setRideAccepted(true);
+
+
         }
       }
 
@@ -272,7 +289,7 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
                 bidAcceptedRide(driver)
               }}
               setRideAccepted={setRideAccepted}
-              onDecline={() => alert(`Declined ${driver.name || driver.riderId}`)}
+              onDecline={handleDecline}
             />
           ))
         ) : (

@@ -81,6 +81,7 @@ class WebSocketService {
         });
          this.socket.on("ride-started", (data) => {
           console.log("Your ride has been started successfully", data);
+          
 
         });
 
@@ -146,6 +147,47 @@ class WebSocketService {
       }
     };
   }
+// 🔥 Listen for ride-started
+onRideStarted(callback: (data: any) => void): () => void {
+  if (!this.socket) {
+    console.warn('⚠️ Socket not initialized');
+    return () => {};
+  }
+
+  const handler = (data: any) => {
+    console.log("📥 ride-started event:", data);
+    callback(data);
+  };
+
+  this.socket.on("ride-started", handler);
+
+  // cleanup function
+  return () => {
+    this.socket?.off("ride-started", handler);
+  };
+}
+
+// 🔥 Listen for ride-completed
+// Inside WebSocketService class
+onRideCompleted(callback: (data: any) => void): () => void {
+  if (!this.socket) {
+    console.warn("⚠️ Socket not initialized, cannot listen for ride-completed");
+    return () => {};
+  }
+
+  const handler = (data: any) => {
+    console.log("📩 ride-completed received:", data);
+    callback(data);
+  };
+
+  this.socket.on("ride-completed", handler);
+
+  // Cleanup
+  return () => {
+    this.socket?.off("ride-completed", handler);
+  };
+}
+
 
   // Add listener for connection status changes
   onConnectionChange(callback: (connected: boolean) => void): () => void {

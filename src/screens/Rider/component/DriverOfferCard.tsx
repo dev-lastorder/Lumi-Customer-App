@@ -1,5 +1,5 @@
 import { CustomText } from '@/components';
-import { RootState } from '@/redux';
+import { RootState, useAppSelector } from '@/redux';
 import { webSocketService } from '@/services/websocketService';
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
@@ -19,11 +19,16 @@ interface DriverOfferCardProps {
 
 const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onDecline, index, setRideAccepted }) => {
   const slideAnim = useRef(new Animated.Value(50)).current;
-  const animation = useRef(new Animated.Value(1)).current;
+  const TOTAL_TIME = 15000;
+
+  const [remainingTime, setRemainingTime] = useState(TOTAL_TIME);
   const [disabled, setDisabled] = useState(false);
-  const [remainingTime, setRemainingTime] = useState<number>(0);
+
+  const animation = useRef(new Animated.Value(1)).current;
   const { currency } = useSelector((state: RootState) => state.appConfig);
   const rideSchedule = useSelector((state: RootState) => state.rideCreation.scheduleRide);
+  const ride = useAppSelector((state) => state.rideCreation.ride);
+
 
   const hourlyRide = useSelector((state: RootState) => state.rideCreation.hourlyRide);
   console.log('my driver data:', driver);
@@ -35,87 +40,80 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
         ? "hourlyRide"
         : "started";
 
-  // ✅ Compute remaining time safely
-  useEffect(() => {
-    if (driver?.expiresAt) {
-      const expiresAt = new Date(driver.expiresAt).getTime();
-      const now = Date.now();
-      const remainingMs = Math.max(expiresAt - now, 0);
-      setRemainingTime(remainingMs);
-
-      if (remainingMs > 0) {
-        setDisabled(false);
-        startExpiryCountdown(remainingMs);
-      } else {
-        setDisabled(true);
-      }
-    }
-  }, [driver?.expiresAt]);
 
   // ✅ Slide-in animation
   useEffect(() => {
     Animated.timing(slideAnim, {
       toValue: 0,
-      duration: 500,
+      duration: 400,
       delay: index * 150,
-      useNativeDriver: true,
+      useNativeDriver: true
     }).start();
-  }, [index]);
+  }, []);
 
-  // ✅ Timer animation (fills from 100% → 0%)
-  const startExpiryCountdown = (remainingMs: number) => {
+  // =============== Timer Logic ===============
+  useEffect(() => {
+    setRemainingTime(TOTAL_TIME);
+    setDisabled(false);
+
+    // progress bar animation
     Animated.timing(animation, {
       toValue: 0,
-      duration: remainingMs,
-      useNativeDriver: false,
+      duration: TOTAL_TIME,
+      useNativeDriver: false
     }).start(() => setDisabled(true));
 
-    // Disable when expired
-    const timeout = setTimeout(() => {
-      setDisabled(true);
-      setRemainingTime(0);
-    }, remainingMs);
+    // countdown clock
+    const interval = setInterval(() => {
+      setRemainingTime(prev => {
+        if (prev <= 1000) {
+          clearInterval(interval); 
+          setDisabled(true);
 
-    return () => clearTimeout(timeout);
-  };
+          // Auto-remove card when expired
+          onDecline(driver?.rideRequest?.id);
 
-  // ✅ Update live countdown (mm:ss)
-  useEffect(() => {
-    if (!disabled && remainingTime > 0) {
-      const interval = setInterval(() => {
-        setRemainingTime((prev) => {
-          if (prev <= 1000) {
-            clearInterval(interval);
-            setDisabled(true);
-            return 0;
-          }
-          return prev - 1000;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [disabled, remainingTime]);
+          return 0;
+        }
+        return prev - 1000;
+      });
+    }, 1000);
+
+
+    return () => clearInterval(interval);
+  }, [driver]);
 
   const widthInterpolate = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
+    outputRange: ['0%', '100%']
   });
 
-  // ✅ Helper to format countdown
+  // Format mm:ss
   const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    const secs = Math.floor(ms / 1000);
+    return `0:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
     <Animated.View style={{ transform: [{ translateY: slideAnim }] }} className="bg-white rounded-3xl p-4 mb-4 mx-4">
       <View className="flex-row justify-between items-center">
         <View className="flex-row items-center gap-3">
-          <View className="w-12 h-12 rounded-full bg-red-300 items-center justify-center">
-            <Text className="text-white font-bold text-lg">{driver?.rider?.userProfile?.user?.name || 'john doe'}</Text>
+          <View className="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+            {driver?.rider?.userProfile?.user?.profile ? (
+              <Image
+                source={{ uri: driver?.rider?.userProfile?.user?.profile }}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <View className="w-full h-full bg-[#1E2B66] items-center justify-center">
+                <Text className="text-white font-bold text-lg">
+                  {driver?.rider?.userProfile?.user?.name?.charAt(0) || 'J'}
+                </Text>
+              </View>
+            )}
           </View>
+
 
           <View>
             <View className="gap-1 flex-row items-center">
@@ -142,7 +140,7 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
       </CustomText>
 
       <View className="flex-row mt-3">
-        <TouchableOpacity onPress={onDecline} className="bg-[#F4F4F5] w-1/2 py-3 rounded-full items-center mr-2">
+        <TouchableOpacity onPress={() => onDecline(driver?.rideRequest?.id)} className="bg-[#F4F4F5] w-1/2 py-3 rounded-full items-center mr-2">
           <CustomText lightColor="#18181B">Decline</CustomText>
         </TouchableOpacity>
 

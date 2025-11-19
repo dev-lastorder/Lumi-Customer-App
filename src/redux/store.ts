@@ -18,6 +18,7 @@ import rideLocationReducer from './slices/RideSlices/rideLocationSlice';
 import rideSelectionReducer from "./slices/RideSlices/rideSelectionSlice";
 import rideCreationReducer from "./slices/RideSlices/rideCreationSlice";
 import appConfigReducer from './slices/appConfigSlice';
+import activeRideReducer from './slices/RideSlices/activeRideSlice';
 
 
 import authSuperAppReducer from './slices/authSliceSuperApp';  // Add new super app auth
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   rideSelection: rideSelectionReducer,
   rideCreation: rideCreationReducer,
   appConfig: appConfigReducer,
+  activeRide : activeRideReducer,
 });
 
 const persistConfig = {
