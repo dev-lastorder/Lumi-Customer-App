@@ -171,7 +171,7 @@ export default function VerifyOTPLoginScreen() {
             <BackButton onPress={() => router.back()} />
             <AuthHeader
               title="OTP"
-              subtitle="We have sent OTP code verification to your mobile no"
+              subtitle="We have sent OTP code verification to your mobile number"
             />
           </View>
 

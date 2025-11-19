@@ -252,7 +252,7 @@ export default function VerifyOTPScreen() {
             </View>
             <AuthHeader
               title="OTP"
-              subtitle="We have sent OTP code verification to your mobile no"
+              subtitle="We have sent OTP code verification to your mobile number"
             />
           </View>
 

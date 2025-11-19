@@ -52,7 +52,7 @@ export const ChatAi = React.memo(({ location, onPress }) => {
   const newuser = useSelector(selectSuperAppUser);
   console.log(newuser)
 
-  const name = user?.name ?? "Nahoor Tahir";
+  const name = user?.name ?? "User";
   const fullMessage = `Hello ${name || newuser?.name} 👋\nHow can I help you today?`;
 
   const animatedText = useTypingText(fullMessage, 40);

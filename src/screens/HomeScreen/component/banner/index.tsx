@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 // import { GET_BANNERS } from '@/api';
 
 // Components
-import { CustomCarousel, CustomText } from '@/components';
+import {CustomText } from '@/components';
 import { VideoItem } from './video-item';
 
 // Types

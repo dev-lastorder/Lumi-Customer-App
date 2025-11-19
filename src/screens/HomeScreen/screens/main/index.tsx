@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import { RootState, useAppSelector } from '@/redux';
-
-import HomeScreenBanner from '../../component/banner';
 import HomeScreenCards from '../../component/card';
 import { webSocketService } from '@/services/websocketService';
 import { rideRequestsService } from '@/screens/Rider/utils/rideRequestService';
@@ -84,7 +82,7 @@ const HomePageMainScreen = () => {
           showMap={false}
           showSettings={false}
         >
-          <HomeScreenBanner />
+          
           <HomeScreenCards />
         </ScreenWrapperWithAnimatedHeader>
       )}

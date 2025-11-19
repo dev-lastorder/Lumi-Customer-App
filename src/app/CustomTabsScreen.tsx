@@ -24,7 +24,7 @@ export default function CustomTabsScreen() {
       case "Profile":
         return <ProfileMainSuperAppScreen />;
       case "Services":
-        return <Home />;
+        return <ProfileMainSuperAppScreen/>;
       case "Center":
         return <AiChat />;
       default:

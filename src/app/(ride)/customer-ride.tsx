@@ -68,6 +68,8 @@ const CustomerRide = ({ rideDataExist }: any) => {
   const [calendarModalVisible, setcalendarModalVisible] = useState(false);
   const [paymentVisible, setPaymentVisible] = useState(false);
   const { data, error } = useZoneCheck(33.6844, 73.0479);
+  const activeRide = useSelector((state: RootState) => state.activeRide.onGoingActiveRideData);
+
 
   console.log("my zonedaata:", data)
   console.log("my zonedaata error:", error)
@@ -211,7 +213,7 @@ const CustomerRide = ({ rideDataExist }: any) => {
 
   return (
     <View className="flex-1 bg-white relative">
-      <CustomerMap stopCoords={stopCoords} rideAccepted={rideAccepted} myRideDataExist={myRideDataExist} rideDataExist={rideDataExist} />
+      <CustomerMap stopCoords={stopCoords} rideAccepted={rideAccepted} myRideDataExist={myRideDataExist} rideDataExist={rideDataExist} findingRide={false} />
 
       {error && !rideConfirmation && (
         <View
@@ -301,15 +303,19 @@ const CustomerRide = ({ rideDataExist }: any) => {
         </>
       ) : (
         <>
-          <View
-            style={{
-              position: 'absolute',
-              top: insets.top + 10,
-              left: 15,
-            }}
-          >
-            <HeaderIcon onPress={() => router.back()} iconName={goBackIcon} iconType="Ionicons" />
-          </View>
+          {!activeRide && (
+            <View
+              style={{
+                position: 'absolute',
+                top: insets.top + 10,
+                left: 15,
+              }}
+            >
+              <HeaderIcon onPress={() => router.back()} iconName={goBackIcon} iconType="Ionicons" />
+            </View>
+          )
+
+          }
 
           <TouchableOpacity
             className="bg-white border border-[#E4E4E7] w-10 h-10 rounded-full items-center justify-center"
