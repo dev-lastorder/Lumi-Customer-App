@@ -22,3 +22,4 @@ export { default as NoInternetConnection } from './EmptyLayout';
 export { default as SomethingWentWrong } from './EmptyLayout';
 
 export { default as cartPopUp } from './cartPopUp';
+export { default as OTPInput } from './OTPInput';
