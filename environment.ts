@@ -1,8 +1,8 @@
 
 export enum BACKEND_URL{
 
-    LOCAL = "http://192.168.18.88:3000",
-    LOCAL_HOST = "http://192.168.18.14:3000",
+    LOCAL = "http://192.168.18.11:3000",
+    LOCAL_HOST = "http://192.168.18.11:3000",
     PRODUCTION =  "https://ride-server.lumi.qa" //https://api-nestjs-enatega.up.railway.app //"https://api-nestjs-enatega.up.railway.app"
 
 }
