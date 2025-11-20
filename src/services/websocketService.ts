@@ -1,5 +1,7 @@
 // services/websocketService.ts
 import { BASE_URL } from '@/environment';
+import { store } from '@/redux';
+import { setDriverSliceCoords } from '@/redux/slices/RideSlices/rideLocationSlice';
 import { router } from 'expo-router';
 import io, { Socket } from 'socket.io-client';
 
@@ -73,17 +75,20 @@ class WebSocketService {
           this.connectionListeners.forEach((listener) => listener(false));
         });
 
-
-        this.socket.on("ride-completed", (data) => {
-          console.log("Your ride has been completed successfully", data);
-          router.push("/(ride)/customer-ride")
-
+        this.socket.on('ride-completed', (data) => {
+          console.log('Your ride has been completed successfully', data);
+          router.push('/(ride)/customer-ride');
         });
-         this.socket.on("ride-started", (data) => {
-          console.log("Your ride has been started successfully", data);
-
+        this.socket.on('ride-started', (data) => {
+          console.log('Your ride has been started successfully', data);
         });
 
+        this.socket.on('get-rider-location', (data) => {
+          console.log('Got the Rider Location', data);
+          //update rider location in redux store
+          store.dispatch(setDriverSliceCoords({ lat: data?.latitude, lng: data?.longitude })); 
+
+        });
 
         this.socket.on('connect_error', (error: any) => {
           console.error('❌ WebSocket connection error:', error);
@@ -146,6 +151,46 @@ class WebSocketService {
       }
     };
   }
+  // 🔥 Listen for ride-started
+  onRideStarted(callback: (data: any) => void): () => void {
+    if (!this.socket) {
+      console.warn('⚠️ Socket not initialized');
+      return () => {};
+    }
+
+    const handler = (data: any) => {
+      console.log('📥 ride-started event:', data);
+      callback(data);
+    };
+
+    this.socket.on('ride-started', handler);
+
+    // cleanup function
+    return () => {
+      this.socket?.off('ride-started', handler);
+    };
+  }
+
+  // 🔥 Listen for ride-completed
+  // Inside WebSocketService class
+  onRideCompleted(callback: (data: any) => void): () => void {
+    if (!this.socket) {
+      console.warn('⚠️ Socket not initialized, cannot listen for ride-completed');
+      return () => {};
+    }
+
+    const handler = (data: any) => {
+      console.log('📩 ride-completed received:', data);
+      callback(data);
+    };
+
+    this.socket.on('ride-completed', handler);
+
+    // Cleanup
+    return () => {
+      this.socket?.off('ride-completed', handler);
+    };
+  }
 
   // Add listener for connection status changes
   onConnectionChange(callback: (connected: boolean) => void): () => void {
@@ -162,7 +207,7 @@ class WebSocketService {
   onReceivedBid(callback: (bidData: any) => void): () => void {
     if (!this.socket) {
       console.warn('⚠️ Socket not initialized, cannot listen for bids');
-      return () => { };
+      return () => {};
     }
 
     const handler = (bidData: any) => {
@@ -189,22 +234,15 @@ class WebSocketService {
     console.log('📤 Emitting bid-accepted:', payload);
     this.socket.emit('bid-accepted', payload);
   }
-  rideCancel(payload: {
-    rideId: string;
-    genericUserId: string
-
-  }): void {
-
+  rideCancel(payload: { rideId: string; genericUserId: string }): void {
     if (!this.socket || !this.isConnected) {
-      console.error("❌ Cannot start ride— WebSocket not connected");
+      console.error('❌ Cannot start ride— WebSocket not connected');
       return;
     }
 
-    console.log("📤 Emitting ride-cancelled  event:", payload);
-    this.socket.emit("ride-cancelled", payload);
-
+    console.log('📤 Emitting ride-cancelled  event:', payload);
+    this.socket.emit('ride-cancelled', payload);
   }
-
 
   emitRideRaiseFare(payload: {
     rideRequestData: any; // full rideReq object from API
@@ -236,18 +274,15 @@ class WebSocketService {
   }
 
   emitRideRequest(payload: any): void {
-
     if (!this.socket || !this.isConnected) {
       console.error('❌ Cannot emit bid-accepted — socket not connected');
       return;
     }
     // const payload = { rideData };
     console.log('📤 Emitting bid-request:', payload);
-    this.socket?.emit("ride-request-created-by-customer", payload, (response: any) => {
+    this.socket?.emit('ride-request-created-by-customer', payload, (response: any) => {
       console.log('📤 Ride request response from server:', response);
     });
-
-
   }
 
   // Get connection status

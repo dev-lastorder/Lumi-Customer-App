@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Linking, Alert, Share, Platform } from 'react-native';
 import { FontAwesome, Feather, AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { CustomText } from '@/components';
@@ -18,6 +18,8 @@ import { getEmergencyContact } from '../../utils/getEmergencyContact';
 import { rideRequestsService } from '../../utils/rideRequestService';
 import DriverCallModal from './DriverCallModal';
 import { webSocketService } from '@/services/websocketService';
+import { clearOnGoingRideData, setOnGoingRideData } from '@/redux/slices/RideSlices/activeRideSlice';
+import RatingModal from '../DriverRating/RatingModal';
 
 interface Props {
   setRideAccepted: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,6 +42,11 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
   const [rideData, setRideData] = useState<any>();
   const [showDriverRating, setShowDriverRating] = useState(false);
   const { currency, emergencyContact } = useSelector((state: RootState) => state.appConfig);
+  const [loading, setLoading] = useState(false);
+  const [modalRatingVisible, setModalRatingVisible] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
+
+
 
   const handleCancel = () => {
     dispatch(clearLastSelectedRide());
@@ -54,21 +61,26 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
   };
 
   const handleCancelRide = async (rideId: string, rideData: any) => {
-
+    setLoading(true)
     console.log("rideData in ride accepted cancel", rideData);
+    handleCancel();
     webSocketService.rideCancel({
       rideId: rideId,
       genericUserId: rideData?.driver?.user?.id,
     })
     const result = await rideRequestsService.cancelRide(rideId);
 
- 
+    setLoading(false)
     if (result?.success === false) {
       Alert.alert("Error", result.error.message || "Could not cancel ride.");
+
+      setLoading(false)
     } else {
       Alert.alert("Success", "Ride canceled successfully.");
       handleCancel();
       setCancelRide(false)
+
+      setLoading(false)
     }
 
   }
@@ -76,18 +88,24 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
 
   const handleShare = async () => {
     try {
-      const latitude = 25.276987;
-      const longitude = 55.296249;
+      const pickupLat = rideData?.pickup_lat;
+      const pickupLng = rideData?.pickup_lng;
 
-      const rideLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      const dropLat = rideData?.dropoff_lat;
+      const dropLng = rideData?.dropoff_lng;
+
+      // Google Maps links
+      const pickupLink = `https://www.google.com/maps?q=${pickupLat},${pickupLng}`;
+      const dropoffLink = `https://www.google.com/maps?q=${dropLat},${dropLng}`;
 
       await Share.share({
-        message: `🚖 I'm on a ride! Track me live: ${rideLink}`,
+        message: `🚖 Ride Details:\n\n📍 Pickup Location:\n${pickupLink}\n\n📍 Dropoff Location:\n${dropoffLink}`,
       });
     } catch (error) {
-      console.log('Error sharing ride:', error);
+      console.log("Error sharing ride:", error);
     }
   };
+
 
   const handleEmergencyCall = async () => {
     try {
@@ -115,31 +133,85 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
     }
   };
 
-  const locations = [
-    {
-      address: '88 Zurab Gorgiladze St',
-      city: 'Georgia, Batumi',
-      selected: false,
-    },
-    {
-      address: '5 Noe Zhordania St',
-      city: 'Georgia, Batumi',
-      selected: true,
-    },
-  ];
-
-  useEffect(() => {
-    const fetchActiveRide = async () => {
+  const fetchActiveRide = useCallback(async () => {
+    try {
       const activeRide = await rideRequestsService.getActiveRide();
       console.log("🚗 Current active ride:", activeRide);
-      setRideData(activeRide);
-    };
+      dispatch(setOnGoingRideData(activeRide));
 
-    fetchActiveRide();
+      setRideData(activeRide);
+    } catch (error) {
+      console.error("❌ Error fetching active ride:", error);
+    }
   }, []);
 
+// const giveRating = async (ratingData: { comment: string; rating: number }) => {
+//         setLoadingSubmit(true);
+//         try {
 
-  console.log("hellofghfeuogheiufheri", rideData);
+//             console.log("Rating submitted:", ratingData);
+//             console.log("id is :", onGoingRideData?.passengerUser?.id)
+//             console.log('rating data', ratingData)
+
+
+//             const rideId = await rideRequestsService.getMyRiderId();
+//             console.log("Rider ID response:", rideId);
+//             const reviewerId = rideId?.riderId;
+
+//             const payload = {
+//                 description: ratingData.comment,
+//                 rating: ratingData.rating,
+//                 reviewedId: onGoingRideData?.passengerUser?.id,
+//                 rideId: onGoingRideData?.riderId,
+//                 // reviewerId: rideId?.riderId,
+//             };
+
+//             const result = await rideRequestsService.giveDriverRating(payload, reviewerId);
+//             console.log("Server response:", result);
+//             if (result) {
+//                 // router.replace("/(tabs)/(rideRequests)/rideRequest")
+//                 setModalReveiwSubmitted(true);
+//                 setLoadingSubmit(false);
+//                 setModalRatingVisible(false);
+//             }
+//             setLoadingSubmit(false);
+
+//         } catch (error: any) {
+//             console.log("Error giving rating:", error.response);
+//             setLoadingSubmit(false);
+//         }
+//     };
+
+
+
+  useEffect(() => {
+    const unsubscribeStarted = webSocketService.onRideStarted(() => {
+      console.log("🔥 ride-started triggered → refreshing ride data...");
+      fetchActiveRide();
+    });
+
+    const unsubscribeCompleted = webSocketService.onRideCompleted(() => {
+      console.log("🏁 ride-completed triggered → refreshing ride data...");
+      fetchActiveRide();
+      setModalRatingVisible(true);
+      dispatch(clearOnGoingRideData());
+
+    });
+
+    return () => {
+      unsubscribeStarted();
+      unsubscribeCompleted();
+    };
+  }, [fetchActiveRide]);
+
+
+  useEffect(() => {
+    fetchActiveRide();
+  }, [fetchActiveRide]);
+
+
+
+
 
   return (
     <View className="flex-1 p-4 relative">
@@ -263,13 +335,17 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
         <Feather name="chevron-right" size={20} color="#DC2626" />
       </TouchableOpacity>
 
-      <View className="mt-auto">
-        <TouchableOpacity className="border border-[#DC2626] rounded-full py-4 items-center mt-6" onPress={() => handleCancelRide(rideData?.ride_id, rideData)}>
-          <Text className="text-[#DC2626] text-base font-semibold">Cancel the ride</Text>
-        </TouchableOpacity>
-      </View>
+      {rideData?.ride_status !== 'IN_PROGRESS' && (
+        <View className="mt-auto">
+          <TouchableOpacity className="border border-[#DC2626] rounded-full py-4 items-center mt-6" onPress={() => setCancelRide(true)}>
+            <Text className="text-[#DC2626] text-base font-semibold">Cancel the ride</Text>
+          </TouchableOpacity>
+        </View>
+      )
 
-      <DriverRating visible={showDriverRating} onClose={() => setShowDriverRating(false)} />
+      }
+
+      <DriverRating visible={showDriverRating} rideData={rideData} onClose={() => setShowDriverRating(false)} />
 
       <RideSafetyIndex visible={safetyVisible} onClose={() => setSafetyVisible(false)} rideData={rideData} />
 
@@ -296,6 +372,21 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
         }}
         driverName="Aleksandr V."
         driverAvatar="https://i.pravatar.cc/100?img=3"
+      />
+
+      <RatingModal
+        visible={modalRatingVisible}
+        rideData={rideData}
+        onClose={() => setModalRatingVisible(false)}
+        loading={loadingSubmit}
+        onSubmit={(rating) => {
+          console.log("Rating submitted:", rating);
+
+          // giveRating(rating);
+
+
+
+        }}
       />
 
       <PaymentBottomModal visible={cancelRide} onClose={() => setCancelRide(false)} title="Are you sure?">

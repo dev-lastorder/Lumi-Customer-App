@@ -7,36 +7,42 @@ import { RootState, useAppSelector } from '@/redux';
 import { useSelector } from 'react-redux';
 import { acceptBid } from '../../utils/acceptBid';
 import { router } from 'expo-router';
+import { rideRequestsService } from '../../utils/rideRequestService';
 
 interface Props {
   setRideAccepted: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
-
   const ride = useAppSelector((state) => state.rideCreation.ride);
   const [drivers, setDrivers] = useState<any[]>([]);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
+  const [activeRequests, setActiveRequests] = useState([]);
   const currentUserId = useSelector((state: RootState) => state.authSuperApp.user?.id);
-  console.log("currentUserId", currentUserId)
+  const rideSchedule = useSelector((state: RootState) => state.rideCreation.scheduleRide);
+    const hourlyRide = useSelector((state: RootState) => state.rideCreation.hourlyRide);
+  console.log('currentUserId', currentUserId);
+  const status = rideSchedule ? 'schedule' : hourlyRide ? 'hourlyRide' : 'started';
 
+  console.log('My ride in accepting ride', ride);
 
-
-  console.log("My ride in accepting ride", ride)
+  const handleDecline = (id: string) => {
+    setActiveRequests((prev) => prev.filter((item) => item?.id !== id));
+  };
 
   // API fallback
   const getBidsHandler = async (): Promise<any[]> => {
-    console.log("📡 Fetching bids via API...");
+    console.log('📡 Fetching bids via API...');
 
     try {
-      console.log("ride id is coming and is", ride?.existingRideRequest?.id);
-      console.log("id", ride.rideReq?.id);
+      console.log('ride id is coming and is', ride?.existingRideRequest?.id);
+      console.log('id', ride.rideReq?.id);
 
       const bidsResponse = await getBids({
         id: ride.rideReq?.id || ride?.existingRideRequest?.id,
       });
 
-      console.log("📡 Fetched bids via API:", bidsResponse);
+      console.log('📡 Fetched bids via API:', bidsResponse);
 
       const bids = bidsResponse?.bids || [];
 
@@ -46,11 +52,10 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
       // ✅ Also return bids for further processing
       return bids;
     } catch (error) {
-      console.log("❌ Error fetching bids data", error);
+      console.log('❌ Error fetching bids data', error);
       return []; // ✅ Always return an array (never void)
     }
   };
-
 
   // Connect WebSocket & handle connection status
   useEffect(() => {
@@ -158,8 +163,6 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
       }
     };
 
-
-
     // 🚀 Initialize WebSocket + load initial data
     initializeSocket();
     safeGetBids();
@@ -180,65 +183,60 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
     };
   }, [ride?.rideReq?.id, currentUserId]);
 
-
-
   const bidAcceptedRide = async (data: any) => {
-
-    console.log("hiting bidaccepted rideer", data)
+    console.log('hiting bidaccepted rideer', data);
 
     try {
-
-      console.log("accepting ids are ", data?.id);
+      console.log('accepting ids are ', data?.id);
 
       const payload = {
         customerId: data?.rideRequest?.passenger_id,
         bidId: data?.id,
         isSchedule: false,
-        payment_via: "CASH",
+        payment_via: 'CASH',
         scheduledAt: new Date().toISOString(),
       };
 
-      const res = await acceptBid(data?.id, payload);
-      console.log("✅ Bid accepted successfully:", res);
-      if (res.message === "Bid accepted successfully") {
+      const res: any = await acceptBid(data?.id, payload);
+
+      console.log('✅ Bid accepted successfully:', res);
+      webSocketService.emitBidAccepted(data?.rideRequest?.id, data?.rider?.userProfile?.user?.id, status);
+      console.log('✅ Bid accepted successfully:2');
+      setRideAccepted(true);
+      if (res.message === 'Bid accepted successfully') {
         if (res.is_scheduled) {
           // 🚗 Scheduled ride accepted → show modal
-        
-            router.push("/(ride)/customer-ride");
-        } else {
 
-            setRideAccepted(true);
-          
-        
+          const activeRide = await rideRequestsService.getActiveRide();
+          console.log('🚗 Current active ride:', activeRide);
+          {
+            if (activeRide) {
+              router.push('/(ride)/customer-ride');
+            }
+          }
+
+          router.push('/(ride)/customer-ride');
+        } else {
+          setRideAccepted(true);
         }
       }
-
     } catch (error: any) {
       setRideAccepted(false);
-      console.error("❌ Failed to accept bid:", err.response);
+      console.error('❌ Failed to accept bid:', err.response);
     }
-
-
-
-  }
-
-
-
-
+  };
 
   // Listen for live bids (with fallback if no socket data)
   useEffect(() => {
     let hasReceivedSocketData = false;
-    let timeoutId: ReturnType<typeof setTimeout>
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     const unsubscribe = webSocketService.onReceivedBid((bidData) => {
       hasReceivedSocketData = true;
       console.log('📩 Received bid via socket:', bidData);
 
       setDrivers((prevDrivers) => {
-        const exists = prevDrivers.some(
-          (driver) => driver.riderId === bidData.riderId
-        );
+        const exists = prevDrivers.some((driver) => driver.riderId === bidData.riderId);
         if (exists) return prevDrivers;
         return [...prevDrivers, bidData];
       });
@@ -269,10 +267,10 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
               index={index}
               onAccept={() => {
                 // setRideAccepted(true);
-                bidAcceptedRide(driver)
+                bidAcceptedRide(driver);
               }}
               setRideAccepted={setRideAccepted}
-              onDecline={() => alert(`Declined ${driver.name || driver.riderId}`)}
+              onDecline={handleDecline}
             />
           ))
         ) : (

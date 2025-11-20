@@ -17,6 +17,20 @@ export const rideRequestsService = {
       };
     }
   },
+
+  getMyRiderId: async () => {
+    try {
+      const url = `${BASE_URL}/api/v1/ride-vehicles/rider/get-my-rider-id`;
+      const response = await apiInstance.get(url);
+
+      console.log("✅ My Rider Data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Error fetching rider ID:", error);
+      throw error;
+    }
+  },
+
   cancelRide: async (rideId: string) => {
     try {
       const url = `${BASE_URL}/api/v1/rides/${rideId}/customer/cancel`;

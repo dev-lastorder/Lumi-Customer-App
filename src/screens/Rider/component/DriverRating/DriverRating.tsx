@@ -12,9 +12,10 @@ import ReviewCard from './ReviewCard';
 interface RideSafetyIndexProps {
   visible: boolean;
   onClose: () => void;
+  rideData: any;
 }
 
-const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose }) => {
+const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideData }) => {
   const goBackIcon = useGoBackIcon();
   const insets = useSafeAreaInsets();
 
@@ -47,9 +48,9 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose }) => {
             >
               {/* Rider info */}
               <View className="flex items-center">
-                <Image source={{ uri: 'https://i.pravatar.cc/100?img=3' }} className="w-[108] h-[108] rounded-full" />
+                <Image source={{ uri: rideData?.driver?.user?.profile || rideData?.user?.profile || 'https://i.pravatar.cc/100?img=3' }} className="w-[108] h-[108] rounded-full" />
                 <CustomText fontSize="lg" fontWeight="semibold" className="mt-4">
-                  Aleksandr V.
+                  {rideData?.driver?.user?.name}
                 </CustomText>
               </View>
 
@@ -74,7 +75,7 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose }) => {
                   <View className="flex-row items-center gap-1">
                     <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(18), color: '#FBC02D' }} />
                     <CustomText fontSize="md" fontWeight="semibold">
-                      4.89
+                      {rideData?.averageRating}
                     </CustomText>
                   </View>
                   <CustomText fontSize="sm">Rating</CustomText>
@@ -83,66 +84,72 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose }) => {
               <View className="border-t border-gray-200 mt-4 mb-4" />
 
               {/* Reviews */}
-              <View>
-                <CustomText fontSize="lg" fontWeight="semibold">
-                  Top reviews
-                </CustomText>
-              </View>
-
-              {/* Rating */}
-              <View className="flex-row items-center mt-4 mb-4 gap-2">
-                <CustomText fontSize="lg" fontWeight="semibold" className="mt-2">
-                  4.89
-                </CustomText>
-                <View className="flex-row items-center gap-2">
-                  <View className="bg-[#FBC02D] rounded-md p-2">
-                    <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
-                  </View>
-                  <View className="bg-[#FBC02D] rounded-md p-2">
-                    <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
-                  </View>
-                  <View className="bg-[#FBC02D] rounded-md p-2">
-                    <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
-                  </View>
-                  <View className="bg-[#FBC02D] rounded-md p-2">
-                    <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
+              {rideData?.averageRating < 0 && (
+                <>
+                  <View>
+                    <CustomText fontSize="lg" fontWeight="semibold">
+                      Top reviews
+                    </CustomText>
                   </View>
 
-                  <View className="relative rounded-md overflow-hidden">
-                    {/* Gray half background */}
-                    <View className="absolute right-0 top-0 h-full w-1/2 bg-gray-200" />
+                  {/* Rating */}
+                  <View className="flex-row items-center mt-4 mb-4 gap-2">
+                    <CustomText fontSize="lg" fontWeight="semibold" className="mt-2">
+                      4.89
+                    </CustomText>
+                    <View className="flex-row items-center gap-2">
+                      <View className="bg-[#FBC02D] rounded-md p-2">
+                        <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
+                      </View>
+                      <View className="bg-[#FBC02D] rounded-md p-2">
+                        <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
+                      </View>
+                      <View className="bg-[#FBC02D] rounded-md p-2">
+                        <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
+                      </View>
+                      <View className="bg-[#FBC02D] rounded-md p-2">
+                        <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
+                      </View>
 
-                    {/* Yellow half background */}
-                    <View className="absolute left-0 top-0 h-full w-1/2 bg-[#FBC02D]" />
+                      <View className="relative rounded-md overflow-hidden">
+                        {/* Gray half background */}
+                        <View className="absolute right-0 top-0 h-full w-1/2 bg-gray-200" />
 
-                    {/* Star always on top (white) */}
-                    <View className="p-2 items-center justify-center">
-                      <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
+                        {/* Yellow half background */}
+                        <View className="absolute left-0 top-0 h-full w-1/2 bg-[#FBC02D]" />
+
+                        {/* Star always on top (white) */}
+                        <View className="p-2 items-center justify-center">
+                          <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
+                        </View>
+                      </View>
                     </View>
                   </View>
-                </View>
-              </View>
 
-              <CustomText fontSize="lg" fontWeight="medium" className="mt-2 mb-2">
-                Based on 84 Reviews
-              </CustomText>
+                  <CustomText fontSize="lg" fontWeight="medium" className="mt-2 mb-2">
+                    Based on 84 Reviews
+                  </CustomText>
 
-              {/* Rating component */}
-              <RatingDistribution
-                ratings={[
-                  { star: 5, count: 44 },
-                  { star: 4, count: 8 },
-                  { star: 3, count: 22 },
-                  { star: 2, count: 7 },
-                  { star: 1, count: 1 },
-                ]}
-              />
+                  {/* Rating component */}
+                  <RatingDistribution
+                    ratings={[
+                      { star: 5, count: 44 },
+                      { star: 4, count: 8 },
+                      { star: 3, count: 22 },
+                      { star: 2, count: 7 },
+                      { star: 1, count: 1 },
+                    ]}
+                  />
 
-              {/* Review Card */}
-              <ReviewCard />
-              <ReviewCard />
-              <ReviewCard />
-              <ReviewCard />
+                  {/* Review Card */}
+                  <ReviewCard />
+                  <ReviewCard />
+                  <ReviewCard />
+                  <ReviewCard />
+                </>
+              )
+
+              }
             </ScrollView>
           </SafeAreaView>
         </View>

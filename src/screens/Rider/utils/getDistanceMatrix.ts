@@ -41,7 +41,11 @@ export const sendFareData = async (
   origins: string[],
   destinations: string[],
   isHourly: boolean,
-  durationMin?: number
+  durationMin?: number,
+  coordsData?:{
+    fromCoords: { lat: number; lng: number } 
+    toCoords: { lat: number; lng: number } 
+  }
 ) => {
   try {
     // Step 1: POST to backend distance-matrix endpoint
@@ -78,7 +82,7 @@ export const sendFareData = async (
 
     // Step 3: Fetch fare calculation from backend
   
-    const apiUrl = `${BASE_URL}/api/v1/rides/fare/all?durationMin=${finalDurationMin}&distanceKm=${distanceKm}&isHourly=${isHourly}`;
+    const apiUrl = `${BASE_URL}/api/v1/rides/fare/all?durationMin=${finalDurationMin}&distanceKm=${distanceKm}&isHourly=${isHourly}&dropoff_lng=${coordsData?.toCoords?.lng}&dropoff_lat=${coordsData?.toCoords?.lat}&pickup_lng=${coordsData?.fromCoords?.lng}&pickup_lat=${coordsData?.fromCoords?.lat}`;
     const fareResponse = await fetch(apiUrl, { method: "GET" });
     const fareData = await fareResponse.json();
 
