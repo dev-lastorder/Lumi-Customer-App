@@ -4,7 +4,6 @@ import GradientBackground from '@/components/common/GradientBackground/GradientB
 import { CustomText } from '@/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HeaderIcon } from '@/components/common/AnimatedHeader/components';
-import { useGoBackIcon } from '@/components/common/AnimatedHeader/hooks';
 import { goBack } from 'expo-router/build/global-state/routing';
 import PaymentBottomModal from '../PaymentBottomModal';
 import RideDetailsCard from './RideDetailsCard';
@@ -24,7 +23,6 @@ const OrderDetail = () => {
   const ride = JSON.parse(reservation);
 
   const inset = useSafeAreaInsets();
-  const goBackIcon = useGoBackIcon();
   const [isVisible, setisVisible] = useState(false);
 
   const { mutate: cancelReservation, isPending: isCanceling } = useCancelReservation();
@@ -93,7 +91,6 @@ const { currency } = useSelector((state: RootState) => state.appConfig);
             }}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <HeaderIcon iconName={goBackIcon} iconType="Ionicons" onPress={goBack} />
           </View>
           <View className="px-4 py-4" style={{ paddingTop: Platform.OS === 'ios' ? inset.top + 5 : inset.top + 10 }}>
             <CustomText fontSize="lg" fontWeight="semibold" className="text-center mb-5">

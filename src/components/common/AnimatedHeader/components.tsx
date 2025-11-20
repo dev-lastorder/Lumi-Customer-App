@@ -47,7 +47,7 @@ export const BeforeLocation = React.memo(
   )
 );
 
-export const ChatAi = React.memo(({ location, onPress }) => {
+export const ChatAi = React.memo(({ location, onPress }: any ) => {
   const user = useAppSelector((state) => state.auth.user);
   const newuser = useSelector(selectSuperAppUser);
   console.log(newuser)

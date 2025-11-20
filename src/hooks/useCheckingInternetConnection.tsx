@@ -11,6 +11,7 @@ export const useInternetStatus = () => {
         status.isConnected === true && status.isInternetReachable !== false
       );
     } catch (error) {
+      
       setIsConnected(false);
     }
   };

@@ -1,4 +1,3 @@
-import { GET_ALL_ADDRESSES } from '@/api';
 import { useLocationPicker } from '@/hooks/useLocationPicker';
 import { useAppSelector } from '@/redux/hooks';
 import { Colors } from '@/utils';
@@ -58,8 +57,8 @@ const AnimatedHeader: React.FC<AnimatedHeaderProps> = ({
 
           <View className="px-4 bg- flex-row justify-between items-center h-14 mb-1 gap-4">
 
-            {showGoBack && <HeaderIcon onPress={onGoBackPress} iconName={goBackIcon} iconType="Ionicons" />}
-            {transparentBG && (<View className="flex-1" />)}
+            {/* {showGoBack && <HeaderIcon onPress={onGoBackPress} iconName={goBackIcon} iconType="Ionicons" />}
+            {transparentBG && (<View className="flex-1" />)} */}
 
             <View className="flex-1 mr-3 justify-center relative h-full ">
               {showLocationDropdown && (<>
@@ -86,14 +85,14 @@ const AnimatedHeader: React.FC<AnimatedHeaderProps> = ({
             </View>
 
             <View className="flex-row items-center gap-4">
-              {showSettings && <HeaderIcon onPress={onSettingsPress} iconName="filter-variant" iconType='MaterialCommunityIcons' badge={settingsBadge} />}
-              {showMap && <HeaderIcon onPress={onMapPress} iconName="map" />}
+              {/* {showSettings && <HeaderIcon onPress={onSettingsPress} iconName="filter-variant" iconType='MaterialCommunityIcons' badge={settingsBadge} />} */}
+              {/* {showMap && <HeaderIcon onPress={onMapPress} iconName="map" />} */}
               {showCart && (
                 <View className='relative'>
                   {cartItemsQuantity >= 1 && (
                     <CustomText className='absolute bottom-7 left-7 z-10 bg-primary dark:bg-dark-primary rounded-full px-2' fontSize='xs' lightColor='white' darkColor='black'>{cartItemsQuantity}</CustomText>
                   )}
-                  <HeaderIcon onPress={onCartPress} iconName="bell-outline" iconType='MaterialCommunityIcons' />
+                  {/* <HeaderIcon onPress={onCartPress} iconName="bell-outline" iconType='MaterialCommunityIcons' /> */}
                 </View>
               )}
 
@@ -128,7 +127,7 @@ const AnimatedHeader: React.FC<AnimatedHeaderProps> = ({
 
           <View className="px-4 bg- flex-row justify-between items-center h-14 mb-1 gap-4">
 
-            {showGoBack && <HeaderIcon onPress={onGoBackPress} iconName={goBackIcon} iconType="Ionicons" />}
+            {/* {showGoBack && <HeaderIcon onPress={onGoBackPress} iconName={goBackIcon} iconType="Ionicons" />} */}
             {transparentBG && (<View className="flex-1" />)}
 
             <View className="flex-1 mr-3 justify-center relative h-full ">
@@ -156,14 +155,14 @@ const AnimatedHeader: React.FC<AnimatedHeaderProps> = ({
             </View>
 
             <View className="flex-row items-center gap-4">
-              {showSettings && <HeaderIcon onPress={onSettingsPress} iconName="filter-variant" iconType='MaterialCommunityIcons' badge={settingsBadge} />}
-              {showMap && <HeaderIcon onPress={onMapPress} iconName="map" />}
+              {/* {showSettings && <HeaderIcon onPress={onSettingsPress} iconName="filter-variant" iconType='MaterialCommunityIcons' badge={settingsBadge} />} */}
+              {/* {showMap && <HeaderIcon onPress={onMapPress} iconName="map" />} */}
               {showCart && (
                 <View className='relative'>
                   {cartItemsQuantity >= 1 && (
                     <CustomText className='absolute bottom-7 left-7 z-10 bg-primary dark:bg-dark-primary rounded-full px-2' fontSize='xs' lightColor='white' darkColor='black'>{cartItemsQuantity}</CustomText>
                   )}
-                  <HeaderIcon onPress={onCartPress} iconName="cart-outline" iconType='MaterialCommunityIcons' />
+                  {/* <HeaderIcon onPress={onCartPress} iconName="cart-outline" iconType='MaterialCommunityIcons' /> */}
                 </View>
               )}
 

@@ -10,6 +10,7 @@ export const setItemToLocalStorage = async <T>(key: string, value: T): Promise<v
     await AsyncStorage.setItem(key, jsonValue);
   } catch (error) {
     
+    console.log("error is :", error)
   }
 };
 
@@ -21,6 +22,7 @@ export const getItemFromLocalStorage = async <T>(key: string): Promise<T | null>
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? (JSON.parse(jsonValue) as T) : null;
   } catch (error) {
+    console.log("eroor is ", error)
     
     return null;
   }
@@ -33,6 +35,7 @@ export const removeItemFromLocalStorage = async (key: string): Promise<void> => 
   try {
     await AsyncStorage.removeItem(key);
   } catch (error) {
+    console.log("eroor: ,",error)
     
   }
 };

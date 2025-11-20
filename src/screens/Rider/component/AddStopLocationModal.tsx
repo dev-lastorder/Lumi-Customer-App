@@ -242,7 +242,7 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
     if (text.length >= 3) {
       debounceMapSearch(async () => {
         try {
-          const results = await fetchPlaces(text, key);
+          const results = await fetchPlaces(text);
           setMapPredictions(results || []);
         } catch (error) {
           console.error('Error searching address:', error);

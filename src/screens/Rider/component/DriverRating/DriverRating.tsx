@@ -3,11 +3,11 @@ import { View, Image, ScrollView, Modal, SafeAreaView, StyleSheet } from 'react-
 import { LinearGradient } from 'expo-linear-gradient';
 import { CustomIcon, CustomText } from '@/components';
 import { HeaderIcon } from '@/components/common/AnimatedHeader/components';
-import { useGoBackIcon } from '@/components/common/AnimatedHeader/hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import adjust from '@/utils/helpers/adjust';
 import { RatingDistribution } from './RatingDistribution';
 import ReviewCard from './ReviewCard';
+import { router } from 'expo-router';
 
 interface RideSafetyIndexProps {
   visible: boolean;
@@ -16,7 +16,6 @@ interface RideSafetyIndexProps {
 }
 
 const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideData }) => {
-  const goBackIcon = useGoBackIcon();
   const insets = useSafeAreaInsets();
 
   return (
@@ -39,7 +38,7 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideDa
                 zIndex: 999
               }}
             >
-              <HeaderIcon iconName={goBackIcon} iconType="Ionicons" onPress={onClose} />
+              {/* <HeaderIcon iconName={router.canGoBack()} iconType="Ionicons" onPress={onClose} /> */}
             </View>
             <ScrollView
               contentContainerStyle={{ paddingBottom: 40, paddingTop: insets.top + 20 }}

@@ -8,6 +8,7 @@ import HomePageMainScreen from "@/screens/HomeScreen/screens/main";
 
 import AiChat from "./(ai-chat)";
 import ProfileMainSuperAppScreen from "@/screens/profileSuperApp/screens/profileMain";
+import CustomerRide from "./(ride)/customer-ride";
 
 
 export default function CustomTabsScreen() {
@@ -24,7 +25,7 @@ export default function CustomTabsScreen() {
       case "Profile":
         return <ProfileMainSuperAppScreen />;
       case "Services":
-        return <ProfileMainSuperAppScreen/>;
+        return <CustomerRide/>;
       case "Center":
         return <AiChat />;
       default:

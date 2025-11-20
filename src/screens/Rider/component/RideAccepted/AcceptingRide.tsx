@@ -232,7 +232,7 @@ const AcceptingRide: React.FC<Props> = ({ setRideAccepted }) => {
 
     } catch (error: any) {
       setRideAccepted(false);
-      console.error("❌ Failed to accept bid:", err.response);
+      console.error("❌ Failed to accept bid:", error);
     }
 
 

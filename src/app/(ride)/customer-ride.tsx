@@ -1,10 +1,9 @@
-import { ActivityIndicator, Alert, Image, Platform, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomerMap from '@/screens/Rider/component/CustomerMap';
 import { HeaderIcon } from '@/components/common/AnimatedHeader/components';
 import { router, useNavigation } from 'expo-router';
-import { useGoBackIcon } from '@/components/common/AnimatedHeader/hooks';
 import ExtandableBottomSheet from '@/screens/Rider/component/ExtandableBottomSheet';
 import { CustomText } from '@/components';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -28,8 +27,9 @@ import { Sidebar } from '@/components/common/SiderBar/Siderbar';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { webSocketService } from '@/services/websocketService';
 import { useAppConfig } from '@/hooks/useAppConfig';
-import { useZoneCheck } from '@/hooks/rideHooks/useZoneCheck';
+// import { useZoneCheck } from '@/hooks/rideHooks/useZoneCheck';
 import { rideRequestsService } from '@/screens/Rider/utils/rideRequestService';
+import { useZoneCheck } from '@/hooks/rideHooks/useZoneCheck';
 
 type Stop = {
   lat: number;
@@ -41,7 +41,6 @@ type Stop = {
 const CustomerRide = ({ rideDataExist }: any) => {
 
   console.log("rideDataExist", rideDataExist);
-  const goBackIcon = useGoBackIcon();
   const insets = useSafeAreaInsets();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -311,7 +310,8 @@ const CustomerRide = ({ rideDataExist }: any) => {
                 left: 15,
               }}
             >
-              <HeaderIcon onPress={() => router.back()} iconName={goBackIcon} iconType="Ionicons" />
+              <Text>Back icon</Text>
+              {/* <HeaderIcon onPress={() => router.back()} iconName={goBackIcon} iconType="Ionicons" /> */}
             </View>
           )
 

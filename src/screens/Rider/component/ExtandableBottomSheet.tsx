@@ -19,7 +19,6 @@ import RideCompleted from './RideAccepted/RideCompleted';
 import { LinearGradient } from 'expo-linear-gradient';
 import { HeaderIcon } from '@/components/common/AnimatedHeader/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useGoBackIcon } from '@/components/common/AnimatedHeader/hooks';
 import { router } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { clearLastSelectedRide } from '@/redux/slices/RideSlices/rideSelectionSlice';
