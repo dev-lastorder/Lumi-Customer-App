@@ -30,9 +30,15 @@ const RideFare = () => {
     const fromLocation = useSelector(
         (state: RootState) => state.rideLocation.fromLocation
     );
+    const fromCoords = useSelector(
+        (state: RootState) => state.rideLocation.fromCoords
+    );
     const getHours = useSelector((state: RootState) => state.rideCreation.hours)
     const toLocation = useSelector(
         (state: RootState) => state.rideLocation.toLocation
+    );
+    const toCoords = useSelector(
+        (state: RootState) => state.rideLocation.toCoords
     );
 
     const [rideData, setRideData] = useState<{ rideTypeFares: any[] } | null>(
@@ -65,7 +71,7 @@ const RideFare = () => {
         if ( fromLocation && toLocation) {
             setLoadingRides(true)
             const durationMin = getHours * 60;
-            sendFareData([fromLocation], [toLocation],hourlyRide, durationMin)
+            sendFareData([fromLocation], [toLocation],hourlyRide, durationMin,{toCoords,fromCoords})
                 .then((res) => {
                     console.log("🚖 Ride fares response:", res);
                     setLoadingRides(false)

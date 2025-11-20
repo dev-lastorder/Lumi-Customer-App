@@ -2,7 +2,7 @@ import { CustomText } from '@/components';
 import { RootState, useAppSelector } from '@/redux';
 import { webSocketService } from '@/services/websocketService';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Animated, ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
 
 interface DriverOfferCardProps {
@@ -28,18 +28,12 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
   const { currency } = useSelector((state: RootState) => state.appConfig);
   const rideSchedule = useSelector((state: RootState) => state.rideCreation.scheduleRide);
   const ride = useAppSelector((state) => state.rideCreation.ride);
-
+  const [isAccepting, setIsAccepting] = useState(false);
 
   const hourlyRide = useSelector((state: RootState) => state.rideCreation.hourlyRide);
   console.log('my driver data:', driver);
-
-  const status =
-    rideSchedule
-      ? "schedule"
-      : hourlyRide
-        ? "hourlyRide"
-        : "started";
-
+  const interval = useRef<number | null>(null);
+  const status = rideSchedule ? 'schedule' : hourlyRide ? 'hourlyRide' : 'started';
 
   // ✅ Slide-in animation
   useEffect(() => {
@@ -47,7 +41,7 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
       toValue: 0,
       duration: 400,
       delay: index * 150,
-      useNativeDriver: true
+      useNativeDriver: true,
     }).start();
   }, []);
 
@@ -60,14 +54,17 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
     Animated.timing(animation, {
       toValue: 0,
       duration: TOTAL_TIME,
-      useNativeDriver: false
+      useNativeDriver: false,
     }).start(() => setDisabled(true));
 
     // countdown clock
-    const interval = setInterval(() => {
-      setRemainingTime(prev => {
+    interval.current = setInterval(() => {
+      setRemainingTime((prev) => {
         if (prev <= 1000) {
-          clearInterval(interval); 
+          if (interval.current) {
+            clearInterval(interval.current);
+          }
+
           setDisabled(true);
 
           // Auto-remove card when expired
@@ -79,13 +76,16 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
       });
     }, 1000);
 
-
-    return () => clearInterval(interval);
+    return () => {
+      if (interval.current) {
+        clearInterval(interval.current);
+      }
+    };
   }, [driver]);
 
   const widthInterpolate = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0%', '100%']
+    outputRange: ['0%', '100%'],
   });
 
   // Format mm:ss
@@ -100,20 +100,13 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
         <View className="flex-row items-center gap-3">
           <View className="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
             {driver?.rider?.userProfile?.user?.profile ? (
-              <Image
-                source={{ uri: driver?.rider?.userProfile?.user?.profile }}
-                className="w-full h-full"
-                resizeMode="cover"
-              />
+              <Image source={{ uri: driver?.rider?.userProfile?.user?.profile }} className="w-full h-full" resizeMode="cover" />
             ) : (
               <View className="w-full h-full bg-[#1E2B66] items-center justify-center">
-                <Text className="text-white font-bold text-lg">
-                  {driver?.rider?.userProfile?.user?.name?.charAt(0) || 'J'}
-                </Text>
+                <Text className="text-white font-bold text-lg">{driver?.rider?.userProfile?.user?.name?.charAt(0) || 'J'}</Text>
               </View>
             )}
           </View>
-
 
           <View>
             <View className="gap-1 flex-row items-center">
@@ -148,9 +141,15 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
           disabled={disabled}
           onPress={() => {
             if (!disabled) {
-              setRideAccepted(true);
+              // setRideAccepted(true);
+              if (interval.current) {
+                clearInterval(interval.current);
+              }
+
+              setDisabled(true);
+              setIsAccepting(true);
               onAccept?.();
-              webSocketService.emitBidAccepted(driver?.rideRequest?.id, driver?.rider?.userProfile?.user?.id, status);
+              // webSocketService.emitBidAccepted(driver?.rideRequest?.id, driver?.rider?.userProfile?.user?.id, status);
             }
           }}
           style={{
@@ -174,7 +173,11 @@ const DriverOfferCard: React.FC<DriverOfferCardProps> = ({ driver, onAccept, onD
 
           {/* Button text */}
           <View style={{ paddingVertical: 12, alignItems: 'center' }}>
-            <CustomText lightColor="white">{disabled ? 'Expired' : 'Accept'}</CustomText>
+            {isAccepting ? (
+              <ActivityIndicator size="small" color="#FFFFFF" animating={isAccepting} />
+            ) : (
+              <CustomText lightColor="white">{disabled ? 'Expired' : 'Accept'}</CustomText>
+            )}
           </View>
         </TouchableOpacity>
       </View>

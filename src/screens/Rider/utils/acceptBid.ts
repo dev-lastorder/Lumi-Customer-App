@@ -1,4 +1,4 @@
-import { apiInstance } from "@/services/api/ApiInstance";
+import { apiInstance } from '@/services/api/ApiInstance';
 
 export interface BidsPayload {
   id: string;
@@ -23,19 +23,17 @@ export interface AcceptBidPayload {
 
 /**
  * Accepts a ride bid by sending POST request to the Enatega API.
- * 
+ *
  * @param rideId - The ride ID from URL path
  * @param payload - Request body including customerId, bidId, etc.
  */
 export const acceptBid = async (rideId: string, payload: AcceptBidPayload) => {
-  try {
-    const res = await apiInstance.patch(
-      `/api/v1/rides/bids/${rideId}/accept`,
-      payload
-    );
-    return res.data;
-  } catch (error: any) {
-    console.error("❌ Error accepting bid:", error.response?.data || error.message);
-    throw error;
-  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await apiInstance.patch(`/api/v1/rides/bids/${rideId}/accept`, payload);
+      resolve(res?.data);
+    } catch (error: any) {
+      reject(error);
+    }
+  });
 };
