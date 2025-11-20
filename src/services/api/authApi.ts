@@ -1,4 +1,5 @@
 // src/services/api/authApi.ts - STEP 3: AUTH API SERVICE
+import firebaseMessagingService from '../firebaseMessagingService';
 import { ApiMethods } from './apiMethods';
 import {
   SignupFirstStepRequest,
@@ -43,7 +44,7 @@ export class AuthApi {
       console.error('❌ Invalid user object:', user);
       throw new Error('Invalid user object from backend');
     }
-    
+
     // Transform backend user to SuperAppUser format
     const transformedUser: SuperAppUser = {
       id: user.id,
@@ -92,14 +93,23 @@ export class AuthApi {
   // ✅ FIXED: Transform backend signup response
   static async signupFinalStep(data: SignupFinalStepRequest): Promise<SignupResponse> {
     try {
-      console.log('✅ Signup final step:', { 
-        phone: data.phone, 
+      console.log('✅ Signup final step:', {
+        phone: data.phone,
         name: data.name,
-        hasOtp: !!data.sentOtp 
+        hasOtp: !!data.sentOtp
       });
 
-      const result = await ApiMethods.post<SignupFinalStepResponse>('/api/v1/auth/signup/final-step', data);
-      
+      const fcmToken = await firebaseMessagingService.getDeviceToken();
+
+      console.log("📲 Device FCM Token:", fcmToken);
+
+       const payload = {
+        ...data,
+        device_token: fcmToken ?? null,
+      };
+
+      const result = await ApiMethods.post<SignupFinalStepResponse>('/api/v1/auth/signup/final-step', payload);
+
       console.log('🔍 Raw signup response:', result);
 
       // Transform the response to match our app's format
@@ -129,13 +139,24 @@ export class AuthApi {
   // ✅ FIXED: Transform backend login response
   static async loginPhoneVerify(data: LoginPhoneVerifyRequest): Promise<LoginResponse> {
     try {
-      console.log('🔐 Login phone verify:', { 
-        userId: data.userId, 
-        login_as: data.login_as 
+      console.log('🔐 Login phone verify:', {
+        userId: data.userId,
+        login_as: data.login_as
       });
 
-      const result = await ApiMethods.post<LoginPhoneVerifyResponse>('/api/v1/auth/login/phone/verify', data);
-      
+      const fcmToken = await firebaseMessagingService.getDeviceToken();
+
+      console.log("📲 Device FCM Token:", fcmToken);
+
+      // 2️⃣ Add device_token to payload
+      const payload = {
+        ...data,
+        device_token: fcmToken ?? null,
+      };
+
+
+      const result = await ApiMethods.post<LoginPhoneVerifyResponse>('/api/v1/auth/login/phone/verify', payload);
+
       console.log('🔍 Raw login response:', result);
 
       // Transform the response to match our app's format
@@ -155,7 +176,7 @@ export class AuthApi {
     try {
       console.log('🔐 Google login');
       const result = await ApiMethods.post<any>('/api/v1/auth/login/google', data);
-      
+
       return {
         success: true,
         user: this.transformToSuperAppUser(result.user),
