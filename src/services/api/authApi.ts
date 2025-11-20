@@ -105,7 +105,7 @@ export class AuthApi {
 
        const payload = {
         ...data,
-        device_token: fcmToken ?? null,
+        device_push_token: fcmToken ?? null,
       };
 
       const result = await ApiMethods.post<SignupFinalStepResponse>('/api/v1/auth/signup/final-step', payload);
@@ -151,7 +151,7 @@ export class AuthApi {
       // 2️⃣ Add device_token to payload
       const payload = {
         ...data,
-        device_token: fcmToken ?? null,
+        device_push_token: fcmToken ?? null,
       };
 
 
