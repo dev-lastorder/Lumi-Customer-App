@@ -33,7 +33,7 @@ import GradientBackground from '@/components/common/GradientBackground/GradientB
 import SplashGif from '@/components/splash-screen/newIndex';
 import twilioService from '../../services/twilio.service';
 import { Alert } from 'react-native';
-import { ThemeSync } from '@/components/common/ThemeSync';
+import { ThemeSync } from '@/components/features';
 
 // 🔥 NEW: Create QueryClient instance
 const queryClient = new QueryClient({

@@ -24,7 +24,6 @@ import RecentSearches from './RecentSearches';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@apollo/client';
-
 import { fetchPlaces, getPlaceDetails } from '../utils/fetchPlace';
 import { resetLocations, setFromSliceCoords, setFromSliceLocation, setToSliceCoords, setToSliceLocation } from '@/redux/slices/RideSlices/rideLocationSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,7 +66,6 @@ const LocationSearchModal: React.FC<LocationSearchModalProps> = ({
   setToCoords,
   setRideConfirmation
 }) => {
-
   const [activeField, setActiveField] = useState<'from' | 'to' | null>(null);
   const [showMap, setShowMap] = useState(false);
   const [mapMode, setMapMode] = useState<'pickup' | 'dropoff'>('pickup');

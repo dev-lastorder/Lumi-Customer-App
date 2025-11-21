@@ -50,7 +50,6 @@ export const BeforeLocation = React.memo(
 export const ChatAi = React.memo(({ location, onPress }) => {
   const user = useAppSelector((state) => state.auth.user);
   const newuser = useSelector(selectSuperAppUser);
-  console.log(newuser)
 
   const name = user?.name ?? "Nahoor Tahir";
   const fullMessage = `Hello ${name || newuser?.name} 👋\nHow can I help you today?`;

@@ -1,0 +1,1 @@
+export {default as CardFilteredFood} from './cardFilteredFood'

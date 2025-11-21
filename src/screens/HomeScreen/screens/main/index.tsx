@@ -12,6 +12,7 @@ import { rideRequestsService } from '@/screens/Rider/utils/rideRequestService';
 import CustomerRide from '@/app/(ride)/customer-ride';
 import adjust from '@/utils/helpers/adjust';
 import { ScreenWrapperWithAnimatedHeader } from '@/components';
+import firebaseMessagingService from '@/services/firebaseMessagingService';
 
 const HomePageMainScreen = () => {
   const totalQuantity = useAppSelector((state) => state.cart.totalQuantity);

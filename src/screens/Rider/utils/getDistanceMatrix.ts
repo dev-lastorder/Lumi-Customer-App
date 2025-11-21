@@ -43,8 +43,8 @@ export const sendFareData = async (
   isHourly: boolean,
   durationMin?: number,
   coordsData?:{
-    fromCoords: { lat: number; lng: number } 
-    toCoords: { lat: number; lng: number } 
+    fromCoords: { lat: any; lng: any } 
+    toCoords: { lat: any; lng: any } 
   }
 ) => {
   try {

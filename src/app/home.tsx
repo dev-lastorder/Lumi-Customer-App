@@ -14,10 +14,9 @@ export default function SuperAppHome() {
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector(selectSuperAppUser);
-  console.log("🚀 ~ SuperAppHome ~ user:", user)
+
   const [showDevMenu, setShowDevMenu] = useState(false);
 
-  console.log("Super app home screen");
 
   // Development menu actions
   const handleLogout = () => {

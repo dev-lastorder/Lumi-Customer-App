@@ -23,7 +23,6 @@ import RecentSearches from './RecentSearches';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useQuery } from '@apollo/client';
-
 import { fetchPlaces, getPlaceDetails } from '../utils/fetchPlace';
 import { saveRecentSearch } from '../utils/saveUserSearch';
 import { MaterialIcons } from '@expo/vector-icons';

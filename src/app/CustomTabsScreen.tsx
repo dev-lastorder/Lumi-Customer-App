@@ -3,11 +3,12 @@ import { View, Text, TouchableOpacity, Image, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
-
+import ProfilePage from "./(food-delivery)/(profile)/profile";
 import HomePageMainScreen from "@/screens/HomeScreen/screens/main";
-
+import { AccountMain } from "@/screens/profile/components/account";
 import AiChat from "./(ai-chat)";
 import ProfileMainSuperAppScreen from "@/screens/profileSuperApp/screens/profileMain";
+import { Home } from "@/screens/restaurant";
 
 
 export default function CustomTabsScreen() {
