@@ -65,8 +65,8 @@ const RideChatIndex: React.FC<Props> = ({
     driverAvatar = "https://i.pravatar.cc/100?img=3"
 }) => {
     
-    // const currentUserId = useSelector((state: RootState) => state.authSuperApp.user?.id);
-    const currentUserId = "89501c4c-e522-470a-9dcf-3bf24137ec77";
+     const currentUserId = useSelector((state: RootState) => state.authSuperApp.user?.id);
+    // const currentUserId = "89501c4c-e522-470a-9dcf-3bf24137ec77";
     console.log("currrent id is :", currentUserId)
     
     // Create unique cache key for this conversation

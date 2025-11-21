@@ -32,6 +32,7 @@ import { MaterialIcons, Ionicons, EvilIcons } from '@expo/vector-icons';
 import { useCurrentLocation } from '@/hooks/useCurrentLocation';
 import { saveRecentSearch } from '../utils/saveUserSearch';
 import { clearRide } from '@/redux/slices/RideSlices/rideCreationSlice';
+import { BASE_URL } from '@/environment';
 
 interface LocationSearchModalProps {
   visible: boolean;
@@ -152,28 +153,53 @@ const LocationSearchModal: React.FC<LocationSearchModalProps> = ({
 
   // Fetch address from coordinates (reverse geocoding)
   const fetchAddressFromCoordinates = async (lat: number, lng: number) => {
-   
-
     setIsLoadingAddress(true);
-    try {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
-      );
-      const data = await response.json();
 
-      if (data.status === 'OK' && data.results.length > 0) {
-        const address = data.results[0].formatted_address;
-        setMapAddress(address);
-      } else {
-        setMapAddress('Address not found');
+    try {
+      const url = `${BASE_URL}/api/v1/maps/address-from-coordinates?lat=${lat}&lng=${lng}`;
+      console.log("GET →", url);
+
+      const response = await fetch(url, { method: "GET" });
+
+      if (!response.ok) {
+        console.error("GET API failed with status:", response.status);
+        setMapAddress("Error loading address");
+        return;
       }
+
+      const data = await response.json();
+      console.log("GET API response corrected:", data);
+
+      if (data?.address) {
+        const rawAddress = data?.address;
+
+        // If address is missing or not a string → fallback
+        if (typeof rawAddress !== "string" || rawAddress.trim() === "") {
+          setMapAddress("Address not found");
+          return;
+        }
+
+        // Remove Plus Code safely
+        let cleanedAddress = rawAddress;
+
+        // Only clean if there's a comma in the string
+        if (rawAddress.includes(",")) {
+          cleanedAddress = rawAddress.substring(rawAddress.indexOf(",") + 1).trim();
+        }
+
+        setMapAddress(cleanedAddress);
+      } else {
+        setMapAddress("Address not found");
+      }
+
     } catch (error) {
-      console.error('Error fetching address:', error);
-      setMapAddress('Error loading address');
+      console.error("GET API error:", error);
+      setMapAddress("Error loading address");
     } finally {
       setIsLoadingAddress(false);
     }
   };
+
 
   // Debounced version of region change
   const onRegionChangeComplete = useCallback((newRegion: any) => {
@@ -564,7 +590,7 @@ const LocationSearchModal: React.FC<LocationSearchModalProps> = ({
           ]}>
             <View style={styles.inputWrapper}>
               <Image
-                source={require("../../../assets/images/toIcon.png")}
+                source={require("../../../assets/images/pinStart.png")}
                 style={styles.locationIcon}
                 resizeMode="contain"
               />
@@ -618,7 +644,7 @@ const LocationSearchModal: React.FC<LocationSearchModalProps> = ({
           ]}>
             <View style={styles.inputWrapper}>
               <Image
-                source={require("../../../assets/images/fromIcon.png")}
+                source={require("../../../assets/images/pinStop.png")}
                 style={styles.locationIcon}
                 resizeMode="contain"
               />

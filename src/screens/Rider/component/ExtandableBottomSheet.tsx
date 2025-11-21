@@ -179,7 +179,7 @@ const ExtandableBottomSheet: React.FC<Props> = ({
             {...(!isRiderRequest ? panResponder.panHandlers : {})}
         >
 
-        {(rideAccepted || rideConfirmation || rideCompleted) && (
+        {(!rideAccepted || rideConfirmation || rideCompleted) && (
         <View
             style={{
             position: 'absolute',
