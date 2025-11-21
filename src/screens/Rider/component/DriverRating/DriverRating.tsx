@@ -19,6 +19,28 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideDa
   const goBackIcon = useGoBackIcon();
   const insets = useSafeAreaInsets();
 
+
+  const getJoinedTime = (createdAt: string | number | Date) => {
+    if (!createdAt) return '';
+
+    const joinDate = new Date(createdAt);
+    const now = new Date();
+
+    const yearsDiff = now.getFullYear() - joinDate.getFullYear();
+    const monthsDiff = now.getMonth() - joinDate.getMonth();
+    const daysDiff = now.getDate() - joinDate.getDate();
+
+    let totalMonths = yearsDiff * 12 + monthsDiff;
+    if (daysDiff < 0) totalMonths -= 1; // adjust if current day is before join day
+
+    if (totalMonths < 1) return '1 Month ago';
+    if (totalMonths < 12) return `${totalMonths} month${totalMonths > 1 ? 's' : ''} ago`;
+
+    const years = Math.floor(totalMonths / 12);
+    return `${years} year${years > 1 ? 's' : ''} ago`;
+  };
+
+
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View className="flex-1 justify-end bg-black/40">
@@ -59,14 +81,15 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideDa
               <View className="flex-row items-center gap-10 justify-between">
                 <View className="flex items-center">
                   <CustomText fontSize="md" fontWeight="semibold">
-                    435
+                    {rideData?.driver?.dynamic_info?.riderTotalRides || 0}
                   </CustomText>
                   <CustomText fontSize="sm">Rides</CustomText>
                 </View>
 
                 <View className="flex items-center">
                   <CustomText fontSize="md" fontWeight="semibold">
-                    1 year
+                    {getJoinedTime(rideData?.driver?.user?.createdAt)}
+
                   </CustomText>
                   <CustomText fontSize="sm">Joined us</CustomText>
                 </View>
@@ -75,7 +98,7 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideDa
                   <View className="flex-row items-center gap-1">
                     <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(18), color: '#FBC02D' }} />
                     <CustomText fontSize="md" fontWeight="semibold">
-                      {rideData?.averageRating}
+                      {rideData?.driver?.dynamic_info?.averageRating || 0}
                     </CustomText>
                   </View>
                   <CustomText fontSize="sm">Rating</CustomText>
@@ -84,15 +107,14 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideDa
               <View className="border-t border-gray-200 mt-4 mb-4" />
 
               {/* Reviews */}
-              {rideData?.averageRating < 0 && (
+              {rideData?.driver?.dynamic_info?.averageRating < 0 && (
                 <>
-                  <View>
+                  {/* <View>
                     <CustomText fontSize="lg" fontWeight="semibold">
                       Top reviews
                     </CustomText>
                   </View>
 
-                  {/* Rating */}
                   <View className="flex-row items-center mt-4 mb-4 gap-2">
                     <CustomText fontSize="lg" fontWeight="semibold" className="mt-2">
                       4.89
@@ -112,13 +134,11 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideDa
                       </View>
 
                       <View className="relative rounded-md overflow-hidden">
-                        {/* Gray half background */}
+                     
                         <View className="absolute right-0 top-0 h-full w-1/2 bg-gray-200" />
 
-                        {/* Yellow half background */}
                         <View className="absolute left-0 top-0 h-full w-1/2 bg-[#FBC02D]" />
 
-                        {/* Star always on top (white) */}
                         <View className="p-2 items-center justify-center">
                           <CustomIcon icon={{ type: 'AntDesign', name: 'star', size: adjust(12), color: 'white' }} />
                         </View>
@@ -130,7 +150,6 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideDa
                     Based on 84 Reviews
                   </CustomText>
 
-                  {/* Rating component */}
                   <RatingDistribution
                     ratings={[
                       { star: 5, count: 44 },
@@ -141,11 +160,10 @@ const DriverRating: React.FC<RideSafetyIndexProps> = ({ visible, onClose, rideDa
                     ]}
                   />
 
-                  {/* Review Card */}
                   <ReviewCard />
                   <ReviewCard />
                   <ReviewCard />
-                  <ReviewCard />
+                  <ReviewCard /> */}
                 </>
               )
 

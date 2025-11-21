@@ -145,42 +145,42 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
     }
   }, []);
 
-// const giveRating = async (ratingData: { comment: string; rating: number }) => {
-//         setLoadingSubmit(true);
-//         try {
+  // const giveRating = async (ratingData: { comment: string; rating: number }) => {
+  //         setLoadingSubmit(true);
+  //         try {
 
-//             console.log("Rating submitted:", ratingData);
-//             console.log("id is :", onGoingRideData?.passengerUser?.id)
-//             console.log('rating data', ratingData)
+  //             console.log("Rating submitted:", ratingData);
+  //             console.log("id is :", onGoingRideData?.passengerUser?.id)
+  //             console.log('rating data', ratingData)
 
 
-//             const rideId = await rideRequestsService.getMyRiderId();
-//             console.log("Rider ID response:", rideId);
-//             const reviewerId = rideId?.riderId;
+  //             const rideId = await rideRequestsService.getMyRiderId();
+  //             console.log("Rider ID response:", rideId);
+  //             const reviewerId = rideId?.riderId;
 
-//             const payload = {
-//                 description: ratingData.comment,
-//                 rating: ratingData.rating,
-//                 reviewedId: onGoingRideData?.passengerUser?.id,
-//                 rideId: onGoingRideData?.riderId,
-//                 // reviewerId: rideId?.riderId,
-//             };
+  //             const payload = {
+  //                 description: ratingData.comment,
+  //                 rating: ratingData.rating,
+  //                 reviewedId: onGoingRideData?.passengerUser?.id,
+  //                 rideId: onGoingRideData?.riderId,
+  //                 // reviewerId: rideId?.riderId,
+  //             };
 
-//             const result = await rideRequestsService.giveDriverRating(payload, reviewerId);
-//             console.log("Server response:", result);
-//             if (result) {
-//                 // router.replace("/(tabs)/(rideRequests)/rideRequest")
-//                 setModalReveiwSubmitted(true);
-//                 setLoadingSubmit(false);
-//                 setModalRatingVisible(false);
-//             }
-//             setLoadingSubmit(false);
+  //             const result = await rideRequestsService.giveDriverRating(payload, reviewerId);
+  //             console.log("Server response:", result);
+  //             if (result) {
+  //                 // router.replace("/(tabs)/(rideRequests)/rideRequest")
+  //                 setModalReveiwSubmitted(true);
+  //                 setLoadingSubmit(false);
+  //                 setModalRatingVisible(false);
+  //             }
+  //             setLoadingSubmit(false);
 
-//         } catch (error: any) {
-//             console.log("Error giving rating:", error.response);
-//             setLoadingSubmit(false);
-//         }
-//     };
+  //         } catch (error: any) {
+  //             console.log("Error giving rating:", error.response);
+  //             setLoadingSubmit(false);
+  //         }
+  //     };
 
 
 
@@ -295,11 +295,21 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
         {/* Wrapper with relative positioning */}
         <View className="relative ml-2">
           {/* Vertical line */}
-          <View className="absolute top-5 bottom-0 h-20 left-2 w-[2px] bg-gray-300" />
+          <View
+            className="absolute left-[10px] w-[2px] bg-gray-300"
+            style={{
+              top: 16, // aligns with center of first icon
+              bottom: 15, // aligns with center of last icon
+            }}
+          />
 
           {/* Start location */}
-          <View className="flex-row items-center gap-4">
-            <Image source={require('@/assets/images/fromIcon.png')} className="w-5 h-5 bg-white" resizeMode="contain" />
+          <View className="flex-row items-center gap-4 mb-5">
+            <Image
+              source={require('@/assets/images/locationStart.png')}
+              className="w-6 h-6 bg-white"
+              resizeMode="contain"
+            />
             <View className="pt-2 w-80">
               <CustomText numberOfLines={2} fontSize="sm">
                 {rideData?.pickup_location || fromLocation}
@@ -307,10 +317,30 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
             </View>
           </View>
 
+          {/* Stops */}
+          {rideData?.stops?.map((stop) => (
+            <View key={stop.id} className="flex-row items-center gap-4 mb-5 ">
+              <Image
+                source={require('@/assets/images/pinStop.png')}
+                className="w-6 h-6 bg-white"
+                resizeMode="contain"
+              />
+              <View className="pt-2 w-80">
+                <CustomText numberOfLines={2} fontSize="sm">
+                  {stop.address}
+                </CustomText>
+              </View>
+            </View>
+          ))}
+
           {/* End location */}
-          <View className="flex-row items-center gap-4 mt-5 w-80">
-            <Image source={require('@/assets/images/fromIcon.png')} className="w-5 h-5 bg-white" resizeMode="contain" />
-            <View>
+          <View className="flex-row items-center gap-4 w-80">
+            <Image
+              source={require('@/assets/images/LocationEnd.png')}
+              className="w-6 h-6 bg-white"
+              resizeMode="contain"
+            />
+            <View className="pt-2">
               <CustomText numberOfLines={2} fontSize="sm">
                 {rideData?.dropoff_location || toLocation}
               </CustomText>
@@ -318,6 +348,8 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
           </View>
         </View>
       </View>
+
+
 
       <TouchableOpacity className="flex-row justify-between items-center py-3" onPress={handleShare}>
         <View className="flex-row items-center gap-2">
@@ -370,8 +402,8 @@ const RideAccepted: React.FC<Props> = ({ setRideAccepted, setRideCompleted, setR
           setCallVisible(false);
           setChatVisible(true);
         }}
-        driverName="Aleksandr V."
-        driverAvatar="https://i.pravatar.cc/100?img=3"
+        driverName={rideData?.driver?.user?.name || "John Doe"}
+        driverAvatar={rideData?.driver?.user?.profile || "https://i.pravatar.cc/100?img=3"}
       />
 
       <RatingModal

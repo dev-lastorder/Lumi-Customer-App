@@ -45,7 +45,7 @@ const RideCard = ({ name, fare, capacity, recommendedFare, imageUrl }: RideCardP
         ${Platform.OS === 'ios' ? 'shadow shadow-black/10 shadow-md' : 'elevation-2'}
       `}
       >
-        <TouchableOpacity
+        {/* <TouchableOpacity
           className="rounded-full bg-white self-end absolute top-5 right-2"
           onPress={() => {
             setOfferModalVisible(true);
@@ -53,7 +53,7 @@ const RideCard = ({ name, fare, capacity, recommendedFare, imageUrl }: RideCardP
           }}
         >
           <MaterialIcons name="mode-edit" size={24} color="#7a7a7a" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View className="relative bg-transparent" style={{ width: '90%' }}>
           <Image source={{ uri: imageUrl }} className="w-[7.2rem] h-[8rem] absolute left-1 -top-[3.38rem] mb-3 z-50" resizeMode="contain" />

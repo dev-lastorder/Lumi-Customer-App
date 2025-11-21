@@ -17,7 +17,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux';
 import { createRide } from '@/screens/Rider/utils/requestRide';
 import LocationSearchModal from '@/screens/Rider/component/LocationSearchModel';
-import { setRide, setSliceFindingRide } from '@/redux/slices/RideSlices/rideCreationSlice';
+import { clearRide, setRide, setSliceFindingRide } from '@/redux/slices/RideSlices/rideCreationSlice';
 import { useDispatch } from 'react-redux';
 import OfferYourFare from '@/screens/Rider/component/OfferYourFare';
 import AddStopLocationModal from '@/screens/Rider/component/AddStopLocationModal';
@@ -30,6 +30,7 @@ import { webSocketService } from '@/services/websocketService';
 import { useAppConfig } from '@/hooks/useAppConfig';
 import { useZoneCheck } from '@/hooks/rideHooks/useZoneCheck';
 import { rideRequestsService } from '@/screens/Rider/utils/rideRequestService';
+import { resetLocations } from '@/redux/slices/RideSlices/rideLocationSlice';
 
 type Stop = {
   lat: number;
@@ -66,7 +67,9 @@ const CustomerRide = ({ rideDataExist }: any) => {
   const [showMyStop, setShowMyStop] = useState(false);
   const [stopCoords, setStopCoords] = useState<{ lat: string; lng: string } | null>(null);
   const [calendarModalVisible, setcalendarModalVisible] = useState(false);
-  const [paymentVisible, setPaymentVisible] = useState(false);
+  const onGoingRideData = useSelector(
+    (state: RootState) => state.activeRide.onGoingActiveRideData
+  ); const [paymentVisible, setPaymentVisible] = useState(false);
   const { data, error } = useZoneCheck(33.6844, 73.0479);
 
   console.log("my zonedaata:", data)
@@ -107,6 +110,16 @@ const CustomerRide = ({ rideDataExist }: any) => {
     console.log('ride accepted', rideAccepted);
   }, [rideAccepted]);
 
+
+  const handleBackIcon = () => {
+    dispatch(setSliceFindingRide(false));
+    dispatch(setRide(null));
+    dispatch(resetLocations());
+    dispatch(clearRide());
+    router.back();
+  }
+
+
   const handleRideAccept = async () => {
     try {
       setLoading(true);
@@ -136,7 +149,7 @@ const CustomerRide = ({ rideDataExist }: any) => {
         data.stops.push({
           lat: Number(stopCoords.lat),
           lng: Number(stopCoords.lng),
-          address: 'Stop 1',
+          address: stopLocation,
           order: 1,
         });
       }
@@ -266,7 +279,7 @@ const CustomerRide = ({ rideDataExist }: any) => {
           >
             <View className="w-4/5 bg-white rounded-2xl p-4 shadow-md">
               <TouchableOpacity className="flex-row items-center gap-2 mb-5" onPress={() => setModalVisible(true)}>
-                <Image source={require('@/assets/images/toIcon.png')} className="w-5 h-5" resizeMode="contain" />
+                <Image source={require('@/assets/images/pinStart.png')} className="w-5 h-5" resizeMode="contain" />
                 <CustomText numberOfLines={2} fontSize="sm" className="text-gray-500 text-sm w-64">
                   {fromLocation}
                 </CustomText>
@@ -274,7 +287,7 @@ const CustomerRide = ({ rideDataExist }: any) => {
 
               {stopLocation ? (
                 <TouchableOpacity className="flex-row items-center gap-2 mb-2" onPress={() => setShowMyStop(true)}>
-                  <Image source={require('@/assets/images/fromIcon.png')} className="w-5 h-5" resizeMode="contain" />
+                  <Image source={require('@/assets/images/pinStop.png')} className="w-5 h-5" resizeMode="contain" />
 
                   <CustomText fontSize="sm" className="text-gray-500 text-sm w-64">
                     2 Stops
@@ -285,7 +298,7 @@ const CustomerRide = ({ rideDataExist }: any) => {
               ) : (
                 <View className="flex flex-row items-center gap-2 mb-2 ">
                   <TouchableOpacity className="flex-row items-center gap-2" onPress={() => setModalVisible(true)}>
-                    <Image source={require('@/assets/images/fromIcon.png')} className="w-5 h-5" resizeMode="contain" />
+                    <Image source={require('@/assets/images/pinStop.png')} className="w-5 h-5" resizeMode="contain" />
 
                     <CustomText numberOfLines={2} fontSize="sm" className="text-gray-500 text-sm w-64">
                       {toLocation}
@@ -301,27 +314,34 @@ const CustomerRide = ({ rideDataExist }: any) => {
         </>
       ) : (
         <>
-          <View
-            style={{
-              position: 'absolute',
-              top: insets.top + 10,
-              left: 15,
-            }}
-          >
-            <HeaderIcon onPress={() => router.back()} iconName={goBackIcon} iconType="Ionicons" />
-          </View>
+          {!rideAccepted && !rideDataExist &&  (
+            <>
 
-          <TouchableOpacity
-            className="bg-white border border-[#E4E4E7] w-10 h-10 rounded-full items-center justify-center"
-            style={{
-              position: 'absolute',
-              top: insets.top + 12,
-              right: 15,
-            }}
-            onPress={() => setDrawerOpen(true)}
-          >
-            <Octicons name="three-bars" size={20} color="black" />
-          </TouchableOpacity>
+              <View
+                style={{
+                  position: 'absolute',
+                  top: insets.top + 10,
+                  left: 15,
+                }}
+              >
+                <HeaderIcon onPress={handleBackIcon} iconName={goBackIcon} iconType="Ionicons" />
+              </View>
+
+              <TouchableOpacity
+                className="bg-white border border-[#E4E4E7] w-10 h-10 rounded-full items-center justify-center"
+                style={{
+                  position: 'absolute',
+                  top: insets.top + 12,
+                  right: 15,
+                }}
+                onPress={() => setDrawerOpen(true)}
+              >
+                <Octicons name="three-bars" size={20} color="black" />
+              </TouchableOpacity>
+            </>
+          )
+
+          }
         </>
       )}
 
@@ -441,22 +461,22 @@ const CustomerRide = ({ rideDataExist }: any) => {
 
       <PaymentBottomModal visible={showMyStop} onClose={() => setShowMyStop(false)} title="Destination Addresses">
         <View className="flex-row items-center gap-2 mb-2">
-          <Image source={require('@/assets/images/fromIcon.png')} className="w-5 h-5" resizeMode="contain" />
+          <Image source={require('@/assets/images/pinStop.png')} className="w-5 h-5" resizeMode="contain" />
 
-          <CustomText fontSize="sm" className="text-gray-500 text-sm w-72 ">
+          <CustomText fontSize="sm" className="text-gray-500 text-sm w-72 " onPress={() => setModalVisible(true)} >
             {toLocation}
           </CustomText>
 
-          <AntDesign name="close" size={20} color="black" />
+          <AntDesign name="close" size={20} color="black" onPress={() => setModalVisible(true)} />
         </View>
         <View className="flex-row items-center gap-2 mb-2">
-          <Image source={require('@/assets/images/fromIcon.png')} className="w-5 h-5" resizeMode="contain" />
+          <Image source={require('@/assets/images/pinStop.png')} className="w-5 h-5" resizeMode="contain" />
 
-          <CustomText fontSize="sm" className="text-gray-500 text-sm w-72">
+          <CustomText fontSize="sm" className="text-gray-500 text-sm w-72" onPress={() => setShowStopModal(true)} >
             {stopLocation}
           </CustomText>
 
-          <AntDesign name="close" size={20} color="black" />
+          <AntDesign name="close" size={20} color="black" onPress={() => setShowStopModal(true)} />
         </View>
       </PaymentBottomModal>
 

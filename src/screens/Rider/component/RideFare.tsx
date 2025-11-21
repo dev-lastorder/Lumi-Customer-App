@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Image, ScrollView, Text, ActivityIndicator } from 'react-native'
+import { View, TouchableOpacity, Image, ScrollView, Text, ActivityIndicator, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Feather, Entypo } from '@expo/vector-icons'
 import { CustomText } from '@/components'
@@ -68,28 +68,47 @@ const RideFare = () => {
 
 
     useEffect(() => {
-        if ( fromLocation && toLocation) {
-            setLoadingRides(true)
+        if (fromLocation && toLocation) {
+            setLoadingRides(true);
+
             const durationMin = getHours * 60;
-            sendFareData([fromLocation], [toLocation],hourlyRide, durationMin,{toCoords,fromCoords})
+
+            sendFareData([fromLocation], [toLocation], hourlyRide, durationMin, { toCoords, fromCoords })
                 .then((res) => {
                     console.log("🚖 Ride fares response:", res);
-                    setLoadingRides(false)
+
+                    setLoadingRides(false);
+
+                    // 🔥 1. Check for backend error and show to user
+                    if (res?.fareData?.statusCode === 400) {
+                        const errorMsg = Array.isArray(res?.fareData?.message)
+                            ? res.fareData.message[0]
+                            : "Something went wrong";
+
+                        Alert.alert("Ride Error", errorMsg);
+                        return;
+                    }
+
+                    // 🔥 2. Normal flow
                     setRideData(res.fareData);
 
                     dispatch(setRideKm(String(res.distanceKm)));
                     dispatch(setRideDuration(String(res.durationMin)));
-
-
 
                     if (res?.fareData?.rideTypeFares?.length > 0) {
                         setSelectedRide(res.fareData.rideTypeFares[0]);
                         dispatch(setLastSelectedRide(res.fareData.rideTypeFares[0]));
                     }
                 })
-                .catch(console.error);
+                .catch((error) => {
+                    console.error("Fare error:", error);
+                    setLoadingRides(false);
+
+                    Alert.alert("Ride Error", "Unable to calculate fare. Please try again.");
+                });
         }
-    }, [ fromLocation, toLocation]);
+    }, [fromLocation, toLocation]);
+
 
 
 

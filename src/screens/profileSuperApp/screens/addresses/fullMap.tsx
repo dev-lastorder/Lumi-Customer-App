@@ -26,6 +26,7 @@ import { fetchPlaces, getPlaceDetails } from '@/screens/Rider/utils/fetchPlace';
 
 // Hooks
 import { useCurrentLocation } from '@/hooks/useCurrentLocation';
+import { BASE_URL } from '@/environment';
 
 interface PlacePrediction {
   description: string;
@@ -36,7 +37,7 @@ export default function FullMapScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
-  
+
   // Get params from addAddresses screen
   const returnScreen = params.returnScreen as string;
   const currentAddress = params.currentAddress as string;
@@ -72,37 +73,57 @@ export default function FullMapScreen() {
 
   // Fetch address from coordinates (reverse geocoding)
   const fetchAddressFromCoordinates = useCallback(async (lat: number, lng: number) => {
-    if (!apiKey) return;
-    
     setIsLoadingAddress(true);
+
     try {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
-      );
-      const data = await response.json();
-      
-      if (data.status === 'OK' && data.results.length > 0) {
-        setAddress(data.results[0].formatted_address);
-      } else {
-        setAddress('Address not found');
+      const url = `${BASE_URL}/api/v1/maps/address-from-coordinates?lat=${lat}&lng=${lng}`;
+      console.log("GET address API:", url);
+
+      const response = await fetch(url, { method: "GET" });
+
+      if (!response.ok) {
+        console.error("GET API failed:", response.status);
+        setAddress("Error loading address");
+        return;
       }
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      const rawAddress = data?.address;
+
+      // Validate address
+      if (typeof rawAddress !== "string" || rawAddress.trim() === "") {
+        setAddress("Address not found");
+        return;
+      }
+
+      // Remove plus code (everything before the first comma)
+      let cleanedAddress = rawAddress;
+      if (rawAddress.includes(",")) {
+        cleanedAddress = rawAddress.substring(rawAddress.indexOf(",") + 1).trim();
+      }
+
+      setAddress(cleanedAddress);
+
     } catch (error) {
-      console.error('Error fetching address:', error);
-      setAddress('Error loading address');
+      console.error("Error fetching address:", error);
+      setAddress("Error loading address");
     } finally {
       setIsLoadingAddress(false);
     }
-  }, [apiKey]);
+  }, []);
+
 
   // Handle region change (debounced)
   const handleRegionChangeComplete = useCallback((newRegion: Region) => {
     setRegion(newRegion);
-    
+
     // Clear existing timeout
     if (regionDebounceRef.current) {
       clearTimeout(regionDebounceRef.current);
     }
-    
+
     // Debounce reverse geocoding
     regionDebounceRef.current = setTimeout(() => {
       fetchAddressFromCoordinates(newRegion.latitude, newRegion.longitude);
@@ -112,12 +133,12 @@ export default function FullMapScreen() {
   // Handle search input change (debounced)
   const handleSearchChange = useCallback((text: string) => {
     setAddress(text);
-    
+
     // Clear existing timeout
     if (searchDebounceRef.current) {
       clearTimeout(searchDebounceRef.current);
     }
-    
+
     // Only search if text is at least 3 characters
     if (text.length >= 3) {
       searchDebounceRef.current = setTimeout(async () => {
@@ -133,7 +154,7 @@ export default function FullMapScreen() {
   const handleSelectPrediction = useCallback(async (prediction: PlacePrediction) => {
     setAddress(prediction.description);
     setPredictions([]);
-    
+
     try {
       const coords = await getPlaceDetails(prediction.place_id, apiKey);
       if (coords && mapRef.current) {
@@ -144,7 +165,7 @@ export default function FullMapScreen() {
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         };
-        
+
         setRegion(newRegion);
         mapRef.current.animateToRegion(newRegion, 1000);
       }
@@ -168,7 +189,7 @@ export default function FullMapScreen() {
     }
 
     setIsGettingLocation(true);
-    
+
     try {
       const newRegion: Region = {
         latitude: currentLocation.latitude,
@@ -178,7 +199,7 @@ export default function FullMapScreen() {
       };
 
       setRegion(newRegion);
-      
+
       if (mapRef.current) {
         mapRef.current.animateToRegion(newRegion, 1000);
       }
@@ -213,8 +234,8 @@ export default function FullMapScreen() {
   return (
     <View style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity 
-        onPress={() => router.back()} 
+      <TouchableOpacity
+        onPress={() => router.back()}
         style={[styles.backButton, { top: insets.top + 15 }]}
       >
         <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
@@ -230,7 +251,7 @@ export default function FullMapScreen() {
             placeholder="Search for a location..."
             placeholderTextColor="#9CA3AF"
           />
-          
+
           {/* Predictions Dropdown */}
           {predictions.length > 0 && (
             <View style={styles.predictionsContainer}>
@@ -254,10 +275,10 @@ export default function FullMapScreen() {
             </View>
           )}
         </View>
-        
+
         {/* Current Location Button */}
-        <TouchableOpacity 
-          onPress={handleGetCurrentLocation} 
+        <TouchableOpacity
+          onPress={handleGetCurrentLocation}
           style={styles.locationButton}
           disabled={isGettingLocation}
         >
@@ -279,7 +300,7 @@ export default function FullMapScreen() {
         showsUserLocation
         showsMyLocationButton={false}
       />
-      
+
       {/* Center Pin */}
       <View style={styles.centerPin}>
         <Image
@@ -317,7 +338,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
   },
-  
+
   // Back Button
   backButton: {
     position: 'absolute',
@@ -335,7 +356,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  
+
   // Search Container
   searchContainer: {
     position: 'absolute',
@@ -376,7 +397,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
-  
+
   // Predictions
   predictionsContainer: {
     position: 'absolute',
@@ -406,7 +427,7 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     lineHeight: 20,
   },
-  
+
   // Map
   map: {
     flex: 1,
@@ -423,7 +444,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  
+
   // Confirm Button
   confirmButton: {
     position: 'absolute',

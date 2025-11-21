@@ -163,11 +163,11 @@ const AddStopLocationModal: React.FC<AddStopLocationModalProps> = ({
 
   // Handle selecting prediction from search
   const handleSelectPrediction = async (prediction: PlacePrediction) => {
-    const coords = await getPlaceDetails(prediction?.place_id, key);
+    const coords = await getPlaceDetails(prediction?.place_id);
     console.log("Stop coords are:", coords);
 
     if (coords) {
-      const [lng, lat] = coords;
+     const { lat, lng } = coords;
 
       const locationItem = {
         title: prediction.description,
