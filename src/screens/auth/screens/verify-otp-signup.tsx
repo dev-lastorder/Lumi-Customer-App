@@ -13,7 +13,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
-import { OtpInput } from 'react-native-otp-entry';
+import { OTPInput } from '@/components/common';
 import { Ionicons } from '@expo/vector-icons';
 
 // Components
@@ -192,36 +192,10 @@ export default function VerifyOTPSignupScreen() {
             )}
 
             {/* OTP INPUT */}
-            <OtpInput
+            <OTPInput
               numberOfDigits={4}
-              focusColor="#3853A4"
-              onTextChange={setOTP}
-              value={otp}
-              textInputProps={{
-                accessibilityLabel: 'One-Time Password',
-                returnKeyType: 'done',
-                onSubmitEditing: Keyboard.dismiss
-              }}
-              theme={{
-                containerStyle: { marginBottom: 32 },
-                pinCodeContainerStyle: {
-                  borderWidth: 2,
-                  borderColor: hasError ? '#FF6B6B' : '#E5E7EB',
-                  backgroundColor: 'white',
-                  borderRadius: 12,
-                  width: 60,
-                  height: 60,
-                  marginHorizontal: 8,
-                },
-                focusedPinCodeContainerStyle: {
-                  borderColor: hasError ? '#FF6B6B' : '#3853A4',
-                },
-                pinCodeTextStyle: {
-                  fontSize: 20,
-                  fontWeight: '600',
-                  color: '#1F2937',
-                },
-              }}
+              onChangeText={setOTP}
+              hasError={hasError}
             />
           </View>
 

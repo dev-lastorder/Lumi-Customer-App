@@ -20,7 +20,8 @@
     "ios": {
       "entitlements": {
         "com.apple.developer.networking.wifi-info": true,
-        "aps-environment": "development"
+        "aps-environment": "development",
+        "com.apple.developer.pushkit.unrestricted-voip": true
       },
       "supportsTablet": true,
       "userInterfaceStyle": "automatic",
@@ -37,7 +38,8 @@
         "UIBackgroundModes": [
           "audio",
           "voip",
-          "remote-notification"
+          "remote-notification",
+          "background-processing"
         ],
         "NSUserTrackingUsageDescription": "Allow this app to collect app-related data that can be used for tracking you or your device.",
        "CFBundleURLTypes": [
@@ -80,6 +82,11 @@
         "android.permission.CALL_PHONE",
         "android.permission.USE_SIP",
         "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.WAKE_LOCK",
+        "android.permission.DISABLE_KEYGUARD",
+        "android.permission.TURN_SCREEN_ON",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.USE_FULL_SCREEN_INTENT",
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE"
